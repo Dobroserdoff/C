@@ -36,6 +36,6 @@ main()
     printf("Unsigned long min: %d, max: %lu\n", 0, ULONG_MAX);
 
     printf("\nRange of long by direct computing:\n");
-    printf("Signed long min: %.0lf, max: %.0lf\n", (0 - (pow(2, 64) / 2)), (pow(2, 64) / 2) - 1); /*I don't know why, but subtraction doesn't work here at max*/
-    printf("Unsigned long min: %d, max: %.0lf\n", 0, (pow(2, 64) - 1)); /*I don't know why, but subtraction doesn't work here at max too*/
+    printf("Signed long min: %.0Lf, max: %.0Lf\n", (0 - (powl(2, 64) / 2)), (powl(2, 64) / 2) - 1);
+    printf("Unsigned long min: %d, max: %.0Lf\n", 0, (powl(2, 64) - 1));
 }
