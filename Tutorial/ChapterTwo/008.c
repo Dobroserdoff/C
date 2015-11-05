@@ -1,12 +1,15 @@
 #include <stdio.h>
+#include <limits.h>
 
 main()
 {
-    unsigned x;
+    unsigned x, y, z;
     int n;
 
-    x =211;
+    x = 215;
     n = 3;
+    y = (x & ~(~0 << n)) << UINT_MAX - n + 1;
+    z = y ^ (x >> n);
 
-    printf("For x = %u, n = %d, result = %u\n", x, n, x >> n);
+    printf("For x = %u, n = %d, result = %u\n", x, n, z);
 }
