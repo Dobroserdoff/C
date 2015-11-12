@@ -19,20 +19,13 @@ main()
     {
         c = getchar();
         if (c != ' ' && c != '\n')
-        {
-            num[i] = c - '0';
-            i++;
-        }
+            num[i++] = c - '0';
+
         else if (num[0])
         {
             for (k = 0; k <= MAXNUM; k++)
-            {
                 if (i)
-                {
-                    i--;
-                    sort[j] += ((int) (pow(10, k))) * num[i];
-                }
-            }
+                    sort[j] += ((int) (pow(10, k))) * num[--i];
             j++;
             num[0] = 0;
         }
