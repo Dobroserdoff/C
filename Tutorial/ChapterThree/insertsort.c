@@ -15,9 +15,10 @@ main()
         num[k] = 0;
     }
 
-    while((c = getchar()) != '\n')
+    do
     {
-        if (c != ' ')
+        c = getchar();
+        if (c != ' ' && c != '\n')
         {
             num[i] = c - '0';
             i++;
@@ -36,13 +37,7 @@ main()
             num[0] = 0;
         }
     }
-        if (num[0])
-            for (k = 0; k <= MAXNUM; k++)
-                if (i)
-                {
-                    i--;
-                    sort[j] += tens[k] * num[i];
-                }
+    while (c != '\n');
 
     for (i = 1; sort[i]; i++)
     {
