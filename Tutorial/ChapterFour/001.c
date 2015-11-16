@@ -12,17 +12,21 @@ main()
     char line[] = "What if hat is just a hat? Drop that!";
     char pattern[] = "hat";
     i = add = 0;
+    pos[0] = -1;
 
     while ((c = findpattern(line, pattern)) > 0)
     {
         pos[i++] = c + add;
         cutstr(line, c, (int)(strlen(pattern)));
         add += c + ((int)(strlen(pattern)));
+        pos[i] = 0;
     }
-    pos[i] = 0;
 
-    for (i = 0; pos[i] != 0; i++)
-        printf("%d ", pos[i]);
+    if (pos[0] == -1)
+        printf("Error: No matches");
+    else
+        for (i = 0; pos[i] != 0; i++)
+            printf("%d ", pos[i]);
 }
 
 int findpattern(char l[], char p[])
