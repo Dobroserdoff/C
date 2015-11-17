@@ -19,9 +19,9 @@ main()
 
 double atof(char s[])
 {
-    double val, power;
+    double val, power, result;
     int i, sign, esign = 1;
- 
+
     for (i = 0; isspace(s[i]); i++)
             ;
     sign = (s[i] == '-') ? -1 : 1;
@@ -41,10 +41,10 @@ double atof(char s[])
             val = 10.0 * val + (s[i] - '0');
             power *= 10;
         }
-        return sign * val / power;
+        val = val / power;
     }
     
-    else if (s[i] == 'e' || s[i] == 'E')
+    if (s[i] == 'e' || s[i] == 'E')
     {
         if (isdigit(s[i + 1]))
             i++;
@@ -60,8 +60,9 @@ double atof(char s[])
         for (power = 0.0; isdigit(s[i]); i++)
             power = 10.0 * power + (s[i] - '0');
         
-        return sign * val * (pow(10, esign * power)); 
+        val = val * (pow(10, esign * power)); 
     }
+    return sign * val;
 }
 
 int checkline(char s[],int lim)
