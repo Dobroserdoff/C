@@ -5,14 +5,15 @@
 
 #define MAXOP 100 /* max size of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
-#define BUFSIZE 100 /* max buffer sizefor ungetch */ 
-#define MAXVAL 100 /* max depth of val stack */
+#define BUFSIZE 100 /* max buffer size for ungetch */ 
+#define MAXVAL 100 /* max depth of value stack */
 
 int getop(char []);
 void push(double);
 double pop(void);
 int getch(void);
 void ungetch(int);
+double modulus(double a, double b);
 
 int sp = 0, bufp = 0;
 double val[MAXVAL];
@@ -20,7 +21,7 @@ char buf[BUFSIZE];
 
 main()
 {
-    int type;
+    int type, sign = 1;
     double op2;
     char s[MAXOP];
        
@@ -43,10 +44,17 @@ main()
                 break;
             case '/':
                 op2 = pop();
-                    if (op2 != 0.0)
-                        push(pop() / op2);
-                    else
-                        printf("error: zero divisor\n");
+                if (op2 != 0.0)
+                    push(pop() / op2);
+                else
+                    printf("error: zero divisor\n");
+                break;
+            case '%':
+                op2 = pop();
+                if (op2 != 0.0)
+                    push(modulus(pop(), op2));
+                else
+                    printf("error: zero divisor\n"); 
                 break;
             case '\n':
                 printf("\t%.8g\n", pop());
@@ -64,7 +72,7 @@ void push(double f)
     if (sp < MAXVAL)
         val[sp++] = f;
     else
-        printf("error: stack full, can't push %g\n", f);
+        printf("error: stack is full, can't push %g\n", f);
 }
  
 double pop(void)
@@ -73,14 +81,14 @@ double pop(void)
         return val[--sp];
     else
     {
-        printf("error: stack empty\n");
+        printf("error: stack is empty\n");
         return 0.0;
     }
 }
 
 int getop(char s[])
 {
-    int i, c;
+    int i, c, n;
 
     while ((s[0] = c = getch()) == ' ' || c == '\t')
         ;
@@ -88,12 +96,19 @@ int getop(char s[])
 
     if (!isdigit(c) && c != '.')
         return c;
+    
+    if ((c == '-' || c == '+') && (!isdigit(n = getch())))
+        return c;
     i = 0;
- 
+    
+    if (c == '-' || c == '+')
+        while (isdigit(s[++i] = c = getch()))
+            ;
+             
     if (isdigit(c))
         while (isdigit(s[++i] = c = getch()))
             ;
- 
+
     if (c == '.')
         while (isdigit(s[++i] = c = getch()))
             ;
@@ -101,19 +116,27 @@ int getop(char s[])
  
     if (c != EOF)
         ungetch(c);
-
+        
     return NUMBER;
 }
 
-int getch(void) /* get a (possibly pushed-back) character */
+int getch(void)
 {
     return (bufp > 0) ? buf[--bufp] : getchar();
 }
 
-void ungetch(int c) /* push character back on input */
+void ungetch(int c)
 {
     if (bufp >= BUFSIZE)
         printf("ungetch: too many characters\n");
     else
         buf[bufp++] = c;
+}
+
+double modulus(double a, double b)
+{
+    int i;
+
+    i = (int)(a / b);
+    return (a - (b * i));
 }
