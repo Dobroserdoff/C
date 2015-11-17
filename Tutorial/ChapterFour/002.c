@@ -19,7 +19,7 @@ main()
 
 double atof(char s[])
 {
-    double val, power, result;
+    double val, power;
     int i, sign, esign = 1;
 
     for (i = 0; isspace(s[i]); i++)
