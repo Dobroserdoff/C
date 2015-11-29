@@ -185,10 +185,10 @@ void command(char s[])
         comprint(k);
     else if (s[0] == 'D')
         comduplicate(k);
-    /*else if (s[0] == 'S')
-        comswap;
+    else if (s[0] == 'S')
+        comswap();
     else if (s[0] == 'C')
-        comclear;*/  
+        comclear();  
 }
 
 void comprint(int k)
@@ -219,7 +219,20 @@ void comduplicate(int k)
     else if ((k - 1) > sp)
         printf("duplicate error: stack is only %d elements deep", sp + 1);
     else
-/bin/bash: :gcc: command not found
-            push(val[i++]); 
+        push(val[i++]); 
 }   
- 
+
+void comswap()
+{
+    double i;
+
+    i = val[sp - 1];
+    val[sp - 1] = val[sp - 2];
+    val[sp - 2] = i;
+}
+
+void comclear()
+{
+    val[0] = 0;
+    sp = 0;
+}
