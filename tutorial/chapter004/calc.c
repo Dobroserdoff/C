@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 
 #define MAXOP 100 /* max size of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
-#define COMMAND '1' /* signal that a command was found*/
+#define COMMAND '1' /* signal that a command was found */
+#define FUNCTION '2'/* signal that function was found */
 #define BUFSIZE 100 /* max buffer size for ungetch */ 
 #define MAXVAL 100 /* max depth of value stack */
 
@@ -15,6 +17,7 @@ double pop(void);
 int getch(void);
 void ungetch(int);
 double modulus(double a, double b);
+void function (char []);
 void command (char []);
 void comprint(int);
 void comduplicate(int);
@@ -23,12 +26,12 @@ void comclear(void);
 
 int sp = 0, bufp = 0;
 double val[MAXVAL];
+double op2;
 char buf[BUFSIZE];
 
 main()
 {
     int type, sign = 1;
-    double op2;
     char s[MAXOP];
        
     while ((type = getop(s)) != EOF)
@@ -40,6 +43,9 @@ main()
                 break;
             case COMMAND:
                 command(s);
+                break;
+            case FUNCTION:
+                function(s);
                 break;
             case '+':
                 push(pop() + pop());
@@ -105,7 +111,7 @@ int getop(char s[])
     
     s[1] = '\0';
 
-    if (!isdigit(c) && !isupper(c) && c != '.' && c != '-' && c != '+')
+    if (!isdigit(c) && !isupper(c) && c != '.' && c != '-' && c != '+' && c != 'f')
         return c;
     
     i = 0;
@@ -119,19 +125,27 @@ int getop(char s[])
         if (i == 1)
         {
             ungetch(c);
-       return s[0];
+            return s[0];
         }
     }
     
     if (isupper(c))
     {
-        s[i] = c;
         while (isdigit(s[++i] = c = getch()))
             ;
         s[i] = '\0';
         return COMMAND;
     }
-             
+    
+    if (c == 'f')
+    {
+        while (!isspace(c = getch()))
+            s[i++] = c;
+        s[i] = '\0';
+        ungetch(c);
+        return FUNCTION;
+    }        
+
     if (isdigit(c))
         while (isdigit(s[++i] = c = getch()))
             ;
@@ -169,6 +183,23 @@ double modulus(double a, double b)
     return (a - (b * i));
 }
 
+void function(char s[])
+{
+    if (strcmp(s, "sin") == 0)
+        push(sin(pop()));
+    else if (strcmp(s, "cos") == 0)
+        push(cos(pop()));
+    else if (strcmp(s, "exp") == 0)
+        push(exp(pop()));
+    else if (strcmp(s, "pow") == 0)
+    {   
+        op2 = pop();
+        push(pow(op2, pop()));
+    }
+    else if (strcmp(s, "sqrt") == 0)
+        push(sqrt(pop()));
+}
+
 void command(char s[])
 {
     int k, i = 0, n = 0;
@@ -199,7 +230,12 @@ void comprint(int k)
     if (k < 1)
         printf("print error: incorrect amount of elements to print");
     else if ((k - 1) > sp)
-        printf("print error: stack is only %d elements deep", sp + 1);
+    {
+        if (sp == 0)
+            printf("print error: there is only one element in stack");
+        else
+            printf("print error: stack is only %d elements deep", sp + 1);
+    }
     else
     {
         printf("\nThe top %d elements of the stack:", k);
