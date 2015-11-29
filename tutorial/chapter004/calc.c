@@ -5,6 +5,7 @@
 
 #define MAXOP 100 /* max size of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
+#define COMMAND '1' /* signal that a command was found*/
 #define BUFSIZE 100 /* max buffer size for ungetch */ 
 #define MAXVAL 100 /* max depth of value stack */
 
@@ -14,6 +15,11 @@ double pop(void);
 int getch(void);
 void ungetch(int);
 double modulus(double a, double b);
+void command (char []);
+void comprint(int);
+void comduplicate(int);
+void comswap(void);
+void comclear(void);
 
 int sp = 0, bufp = 0;
 double val[MAXVAL];
@@ -32,6 +38,9 @@ main()
             case NUMBER:
                 push(atof(s));
                 break;
+            case COMMAND:
+                command(s);
+                break;
             case '+':
                 push(pop() + pop());
                 break;
@@ -47,20 +56,21 @@ main()
                 if (op2 != 0.0)
                     push(pop() / op2);
                 else
-                    printf("error: zero divisor\n");
+                    printf("main error: zero divisor\n");
                 break;
             case '%':
                 op2 = pop();
                 if (op2 != 0.0)
                     push(modulus(pop(), op2));
                 else
-                    printf("error: zero divisor\n"); 
+                    printf("main error: zero divisor\n"); 
                 break;
             case '\n':
-                printf("\t%.8g\n", pop());
+                printf("%g", pop());
+                ++sp; 
                 break;
             default:
-                printf("error: unknown command %s\n", s);
+                printf("main error: unknown command %s\n", s);
                 break;
         }
     }
@@ -72,7 +82,7 @@ void push(double f)
     if (sp < MAXVAL)
         val[sp++] = f;
     else
-        printf("error: stack is full, can't push %g\n", f);
+        printf("push error: stack is full, can't push %g\n", f);
 }
  
 double pop(void)
@@ -81,7 +91,7 @@ double pop(void)
         return val[--sp];
     else
     {
-        printf("error: stack is empty\n");
+        printf("pop error: stack is empty\n");
         return 0.0;
     }
 }
@@ -95,7 +105,7 @@ int getop(char s[])
     
     s[1] = '\0';
 
-    if (!isdigit(c) && c != '.' && c != '-' && c != '+')
+    if (!isdigit(c) && !isupper(c) && c != '.' && c != '-' && c != '+')
         return c;
     
     i = 0;
@@ -111,6 +121,15 @@ int getop(char s[])
             ungetch(c);
        return s[0];
         }
+    }
+    
+    if (isupper(c))
+    {
+        s[i] = c;
+        while (isdigit(s[++i] = c = getch()))
+            ;
+        s[i] = '\0';
+        return COMMAND;
     }
              
     if (isdigit(c))
@@ -137,7 +156,7 @@ int getch(void)
 void ungetch(int c)
 {
     if (bufp >= BUFSIZE)
-        printf("ungetch: too many characters\n");
+        printf("ungetch error: too many characters\n");
     else
         buf[bufp++] = c;
 }
@@ -149,3 +168,58 @@ double modulus(double a, double b)
     i = (int)(a / b);
     return (a - (b * i));
 }
+
+void command(char s[])
+{
+    int k, i = 0, n = 0;
+    char a[MAXOP];
+
+    if (isdigit(s[1]))
+        while(s[++i] != '\0')
+               a[n++] = s[i];
+
+    a[n] = '\0';
+    k = atoi(a);
+
+    if (s[0] == 'P')
+        comprint(k);
+    else if (s[0] == 'D')
+        comduplicate(k);
+    /*else if (s[0] == 'S')
+        comswap;
+    else if (s[0] == 'C')
+        comclear;*/  
+}
+
+void comprint(int k)
+{
+    int i;
+    i = sp - k;
+
+    if (k < 1)
+        printf("print error: incorrect amount of elements to print");
+    else if ((k - 1) > sp)
+        printf("print error: stack is only %d elements deep", sp + 1);
+    else
+    {
+        printf("\nThe top %d elements of the stack:", k);
+        while (i < sp)
+            printf(" %f", val[i++]);
+    }
+    printf("\n"); 
+}
+
+void comduplicate(int k)
+{
+    int i, j = sp;
+    i = sp - k;
+
+    if (k < 1)
+        printf("duplicate error: incorrect amount of elements to duplicate");
+    else if ((k - 1) > sp)
+        printf("duplicate error: stack is only %d elements deep", sp + 1);
+    else
+/bin/bash: :gcc: command not found
+            push(val[i++]); 
+}   
+ 
