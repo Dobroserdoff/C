@@ -186,7 +186,10 @@ double modulus(double a, double b)
 void function(char s[])
 {
     if (strcmp(s, "sin") == 0)
+    {
+        printf("%f\n", sin(1));
         push(sin(pop()));
+    }
     else if (strcmp(s, "cos") == 0)
         push(cos(pop()));
     else if (strcmp(s, "exp") == 0)
@@ -229,16 +232,16 @@ void comprint(int k)
 
     if (k < 1)
         printf("print error: incorrect amount of elements to print");
-    else if ((k - 1) > sp)
+    else if (k > sp)
     {
         if (sp == 0)
             printf("print error: there is only one element in stack");
         else
-            printf("print error: stack is only %d elements deep", sp + 1);
+            printf("print error: stack is only %d elements deep", sp);
     }
     else
     {
-        printf("\nThe top %d elements of the stack:", k);
+        printf("The top %d elements of the stack:", k);
         while (i < sp)
             printf(" %f", val[i++]);
     }
@@ -247,15 +250,16 @@ void comprint(int k)
 
 void comduplicate(int k)
 {
-    int i, j = sp;
+    int i, j = sp - 1;
     i = sp - k;
 
     if (k < 1)
         printf("duplicate error: incorrect amount of elements to duplicate");
-    else if ((k - 1) > sp)
-        printf("duplicate error: stack is only %d elements deep", sp + 1);
+    else if (k > sp)
+        printf("duplicate error: stack is only %d elements deep", sp);
     else
-        push(val[i++]); 
+        while (i <= j)
+            push(val[i++]); 
 }   
 
 void comswap()
