@@ -7,7 +7,8 @@
 #define MAXOP 100 /* max size of operand or operator */
 #define NUMBER '0' /* signal that a number was found */
 #define COMMAND '1' /* signal that a command was found */
-#define FUNCTION '2'/* signal that function was found */
+#define FUNCTION '2' /* signal that function was found */
+#define VARIABLE '3' /* signal that variable was found */
 #define BUFSIZE 100 /* max buffer size for ungetch */ 
 #define MAXVAL 100 /* max depth of value stack */
 
@@ -19,20 +20,23 @@ void ungetch(int);
 double modulus(double a, double b);
 void function (char []);
 void command (char []);
+void variable(char []);
 void comprint(int);
 void comduplicate(int);
 void comswap(void);
 void comclear(void);
 
-int sp = 0, bufp = 0;
+int varletter, sp = 0, bufp = 0, k = 0, l = 0;
+signed int varp[MAXVAL];
 double val[MAXVAL];
 double op2;
 char buf[BUFSIZE];
 
-main()
+int main()
 {
-    int type, sign = 1;
+    int type;
     char s[MAXOP];
+    varp[0] = -1;
        
     while ((type = getop(s)) != EOF)
     {
@@ -46,6 +50,9 @@ main()
                 break;
             case FUNCTION:
                 function(s);
+                break;
+            case VARIABLE:
+                variable(s);
                 break;
             case '+':
                 push(pop() + pop());
@@ -72,8 +79,22 @@ main()
                     printf("main error: zero divisor\n"); 
                 break;
             case '\n':
-                printf("%g", pop());
-                ++sp; 
+                if (sp == 0)
+                    ;
+                else
+                {
+                    if (l == k)
+                    {
+                        printf("%g\n", pop());
+                        ++sp;
+                    }
+                    else
+                    {
+                        printf("main error: undefined variable\n");
+                        l = k = 0;
+                        comclear();
+                    }
+                }
                 break;
             default:
                 printf("main error: unknown command %s\n", s);
@@ -111,7 +132,7 @@ int getop(char s[])
     
     s[1] = '\0';
 
-    if (!isdigit(c) && !isupper(c) && c != '.' && c != '-' && c != '+' && c != 'f')
+    if (!isdigit(c) && !isupper(c) && c != '.' && c != '-' && c != '+' && c != 'f' && !('a' <= c && c <='e'))
         return c;
     
     i = 0;
@@ -129,11 +150,25 @@ int getop(char s[])
         }
     }
     
+    if ('a' <= c && c <= 'e')
+    {
+        varletter = c;
+        while (isdigit(c = getch()))
+            s[i++] = c;
+        
+        s[i] = '\0';
+        ungetch(c);
+        return VARIABLE;
+
+    }
+
     if (isupper(c))
     {
         while (isdigit(s[++i] = c = getch()))
             ;
+
         s[i] = '\0';
+        ungetch(c);
         return COMMAND;
     }
     
@@ -141,6 +176,7 @@ int getop(char s[])
     {
         while (!isspace(c = getch()))
             s[i++] = c;
+
         s[i] = '\0';
         ungetch(c);
         return FUNCTION;
@@ -203,6 +239,28 @@ void function(char s[])
         push(sqrt(pop()));
 }
 
+void variable(char s[])
+{
+    int i;
+    double varval;
+
+    if (strlen(s) == 0)
+    { 
+        varp[k++] = sp;
+        varp[k] = -1;
+        push(varletter);
+    }
+    
+    else
+    {
+        varval = atof(s);
+        for (i = 0; varp[i] != -1; i++)
+            if (val[varp[i]] == varletter)
+                val[varp[i]] = varval;
+        l++;
+    }
+}
+
 void command(char s[])
 {
     int k, i = 0, n = 0;
@@ -235,6 +293,8 @@ void comprint(int k)
     else if (k > sp)
     {
         if (sp == 0)
+            printf ("print error: stack is empty");
+        else if (sp == 1)
             printf("print error: there is only one element in stack");
         else
             printf("print error: stack is only %d elements deep", sp);
@@ -273,6 +333,5 @@ void comswap()
 
 void comclear()
 {
-    val[0] = 0;
     sp = 0;
 }
