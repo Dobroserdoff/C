@@ -132,7 +132,7 @@ int getop(char s[])
     
     s[1] = '\0';
 
-    if (!isdigit(c) && !isupper(c) && c != '.' && c != '-' && c != '+' && c != 'f' && !('a' <= c && c <='e'))
+    if (!isdigit(c) && !isupper(c) && c != '.' && c != '-' && c != '+' && c != 'f' && !('a' <= c && c <= 'e'))
         return c;
     
     i = 0;
