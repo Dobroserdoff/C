@@ -9,7 +9,7 @@ void cutstr(char str[], int position, int patternlength);
 main()
 {
     int i, c, add, pos[MAX];
-    char line[] = "What if hat is just a hat? Drop that!";
+    char line[] = "What if hat is just a hatty hat? Drop that!";
     char pattern[] = "hat";
     i = add = 0;
     pos[0] = -1;
