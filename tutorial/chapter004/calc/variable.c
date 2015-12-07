@@ -3,10 +3,11 @@
 #include <stdlib.h>
 #include "calc.h"
 
+extern int varletter, sp, l, k;
+extern int val[];
+
 void variable(char s[])
-{
-    extern int varletter, sp, l, k;
-    extern int val[];
+{    
     int i;
     double varval;
     signed int varp[MAXVAL];

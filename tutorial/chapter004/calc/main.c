@@ -54,7 +54,7 @@ int main()
                 break;
             case '\n':
                 if (sp == 0)
-                    ;
+                    printf("main error: stack is empty\n");
                 else
                 {
                     if (l == k)
