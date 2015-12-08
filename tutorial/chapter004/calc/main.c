@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "calc.h"
 
-int varletter, sp = 0, bufp = 0, k = 0, l = 0, nl = 0;
+int varletter, sp = 0, bufp = 0, k = 0, l = 0;
 double val[MAXVAL];
 char buf[BUFSIZE];
 
@@ -56,9 +56,6 @@ int main()
                 printf("main error: unknown command %s\n", s);
                 break;
         }
-        if (nl != 0)    
-             
-            nl = 0;
     }
     return 0;
 }

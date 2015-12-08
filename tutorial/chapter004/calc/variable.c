@@ -4,14 +4,14 @@
 #include "calc.h"
 
 extern int varletter, sp, l, k;
-extern int val[];
+extern double val[];
+static signed int varp[MAXVAL];
 
 void variable(char s[])
 {    
     int i;
     double varval;
-    signed int varp[MAXVAL];
-
+    
     if (strlen(s) == 0)
     { 
         varp[k++] = sp;
@@ -23,9 +23,13 @@ void variable(char s[])
     {
         varval = atof(s);
         for (i = 0; varp[i] != -1; i++)
+        {    
             if (val[varp[i]] == varletter)
+            {    
                 val[varp[i]] = varval;
-        l++;
+                l++;
+            }
+        }
     }
 }
 
