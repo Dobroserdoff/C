@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "calc.h"
 
-int varletter, sp = 0, bufp = 0, k = 0, l = 0;
+int varletter, sp = 0, bufp = 0, k = 0, l = 0, nl = 0;
 double val[MAXVAL];
 char buf[BUFSIZE];
 
@@ -52,28 +52,13 @@ int main()
                 else
                     printf("main error: zero divisor\n"); 
                 break;
-            case '\n':
-                if (sp == 0)
-                    printf("main error: stack is empty\n");
-                else
-                {
-                    if (l == k)
-                    {
-                        printf("%g\n", pop());
-                        ++sp;
-                    }
-                    else
-                    {
-                        printf("main error: undefined variable\n");
-                        l = k = 0;
-                        comclear();
-                    }
-                }
-                break;
             default:
                 printf("main error: unknown command %s\n", s);
                 break;
         }
+        if (nl != 0)    
+             
+            nl = 0;
     }
     return 0;
 }

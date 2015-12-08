@@ -2,15 +2,33 @@
 #include <ctype.h>
 #include "calc.h"
 
-static int a = 0;
-
 int getop(char s[])
 {
     int i, c;
-    extern int varletter;
+    static int a = 0;
+    extern int sp, l, k, varletter;
 
-    while (isspace(c = ((a != 0) ? a : getchar())))
+    while ((c = ((a != 0) ? a : getchar())) == ' ' || c == '\t' || c == '\n')
     {   
+        if (c == '\n')
+        {
+            if (sp == 0)
+                printf("main error: stack is empty\n");
+            else
+            {
+                if (l == k)
+                {
+                    printf("%g ", pop());
+                    ++sp;
+                }
+                else
+                {
+                    printf("main error: undefined variable\n");
+                    l = k = 0;
+                    comclear();
+                }
+            }
+        }  
         s[0] = c;
         a = 0;
     }
