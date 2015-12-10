@@ -19,11 +19,6 @@ int main() {
             i = 0;
         }
     }
-    /*
-    if (c == EOF) {
-        s[i] = '\n';
-        reverse(s);    
-    }*/
 }
 
 void reverse (char s[]) {
