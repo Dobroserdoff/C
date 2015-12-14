@@ -12,8 +12,6 @@ char buf[SIZE];
 int array[SIZE];
 
 int main() {
-    int getint(int *);
-
     for (n = 0; n < SIZE && (getint(&array[n])) != EOF; n++)
         printf("%d ", array[n]);
     
