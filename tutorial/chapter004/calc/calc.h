@@ -11,8 +11,6 @@
 int getop(char []);
 void push(double);
 double pop(void);
-int getch(void);
-void ungetch(int);
 double modulus(double a, double b);
 void function (char []);
 void command (char []);
