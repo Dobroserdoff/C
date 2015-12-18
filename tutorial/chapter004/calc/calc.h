@@ -5,7 +5,6 @@
 #define COMMAND '1' /* signal that a command was found */
 #define FUNCTION '2' /* signal that function was found */
 #define VARIABLE '3' /* signal that variable was found */
-#define BUFSIZE 100 /* max buffer size for ungetch */ 
 #define MAXVAL 100 /* max depth of value stack */
 
 int getop(char []);
