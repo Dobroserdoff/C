@@ -2,49 +2,50 @@
 
 #define MAX 100
 
-void strconcat(char *s, char *t);
+void strconcat(char s[], char t[]);
+char s[MAX], t[MAX];
 
-char s[MAX];
 
 int main() {
     int c, first = 1;
-    char *s, *t;
+    char *sp, *tp; 
 
-    while ((c = getchar()) != EOF || c != '\n')
-        if (first)
-            *s++ = c;
-    *s = '\0';
-    printf("%s", s - 3);
-}
-            /* if (c == '\n') {
-                *s = '\0';
-                first = 1;
-                printf("%s", s);
-            }
-        }
-        else
-            return 0;
-    }
-}
-        else { 
-            *t++ = c;
+    sp = &s[0];
+    tp = &t[0];
+
+    while ((c = getchar()) != EOF) {
+        if (first == 1) {
+            *sp++ = c;
             if (c == '\n') {
-                *t = '\0';
-                s[0] = strconcat(*s, *t);
+                *sp = '\0';
+                first = 0;
+            }
+        }
+        else {
+            *tp++ = c;
+            if (c == '\n') {
+                *tp = '\0';
+                strconcat(s, t); 
+                tp = &t[0];
             }
         }
     }
-    printf("%s", *s);
+    printf("%s\n", s);
+    return 0;
 }
 
-void strconcat(char *s, char *t) {
-    int i = 0;
+void strconcat(char s[], char t[]) {
+    char *sp, *tp;
     
-    while (*s++ != '\0')
-        i++;
+    sp = &s[0];
+    tp = &t[0];
 
-    while (*t != '\0')
-        (s[0] + i++) = *t++;
+    while (*sp++ != '\n')
+        ;
+    *sp--;
+
+    while ((*sp++ = *tp++) != '\0')
+        ;
     
-    (s[0] + i) = '\0';
-}*/
+    *sp = '\0';
+}
