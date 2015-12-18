@@ -1,2 +1,0 @@
-Write pointer version of the function strcat that copies the string t to the end of s. 
-

@@ -14,7 +14,7 @@ int main() {
     tp = &t[0];
 
     while ((c = getchar()) != EOF) {
-        if (first == 1) {
+        if (first) {
             *sp++ = c;
             if (c == '\n') {
                 *sp = '\0';
@@ -44,7 +44,7 @@ void strconcat(char s[], char t[]) {
         ;
     *sp--;
 
-    while ((*sp++ = *tp++) != '\0')
+    while(*sp++ = *tp++)
         ;
     
     *sp = '\0';
