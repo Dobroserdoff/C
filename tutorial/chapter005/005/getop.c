@@ -1,40 +1,47 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "calc.h"
+#include "str.h"
 
 int getop() {
     int a, b = 0, c, j, k = 0;
     char *sp, num[MAXNUM];
-    extern char buf[];
-    extern int n, strp, trmark[];
-    
+    extern int n, strp, strmark[];
+    extern char str[];
+
     sp = &str[strmark[strp]];
 
     for (j = 0; (c = getchar()) != EOF; j++) {  
-        if (c == '\n') {
-            *sp++ = '\n';
-            *sp = '\0';
-            return STRING;
-        }
-        else if (c == 'C' && isupper(b = getchar())) {
+        if (c == 'C' && isupper(b = getchar())) {
             while (isdigit(a = getchar()))
                 num[k++] = a;
             num[k++] = '\n';
             num[k] = '\0';
             n = atoi(num);
 
+            while ((a = getchar()) != '\n')
+                ;
+            
             if (b == 'P')
                 return COPY;
             else if (b == 'M')
                 return COMPARE;
             else if (b == 'T')
                 return CONCATENATE;
+            else if (b == 'D')
+                return DELETE;
         }
+        
         else {
             *sp++ = c;
-            if (b)
+            if (b) {
                 *sp++ = b;
+                b = 0;
+            }
+
+            if (c == '\n')
+                strmark[strp++] = j + 1;
         }    
     }    
+    return STRING;
 }
