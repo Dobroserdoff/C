@@ -9,7 +9,7 @@ char buf[MAXLENGTH], str[MAXLENGTH];
 int main()
 {
     int type;
-    strmark[strp] = 0;
+    strmark[strp++] = 0;
            
     while ((type = getop()) != EOF)
     {

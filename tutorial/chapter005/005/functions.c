@@ -8,9 +8,8 @@ void strncp() {
     char *t = &str[strmark[--strp]];
     char *r = &str[strmark[--strp]];
 
-    while (n-- > 0) 
-        if ((*r++ = *t++) == '\n')
-            break;
+    while (n-- > 0 && *t != '\n') 
+        *r++ = *t++;
 
     printf("%s", str);
 }
@@ -30,15 +29,19 @@ void strncm() {
 }
 
 void strnct() {
-    char *t = &str[strmark[--strp]];
-    char *r = &str[strmark[--strp]];
+    char *t = &str[strmark[strp - 3]];
+    char *r = &str[strmark[strp - 2]];
 
-    while (*r++ != '\n')
+    printf("T - %s", t);
+
+   while (*t++ != '\n')
         ;
+    t--;
 
     while (n-- > 0) 
-        if ((*r++ = *t++) == '\n')
+        if ((*t++ = *r++) == '\n')
             break;
+    *t = '\0';
 
     printf("%s", str);
 }

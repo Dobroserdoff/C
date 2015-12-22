@@ -19,9 +19,6 @@ int getop() {
             num[k] = '\0';
             n = atoi(num);
 
-            while ((a = getchar()) != '\n')
-                ;
-            
             if (b == 'P')
                 return COPY;
             else if (b == 'M')
