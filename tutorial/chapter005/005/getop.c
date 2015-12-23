@@ -4,14 +4,14 @@
 #include "str.h"
 
 int getop() {
-    int a, b = 0, c, j, k = 0;
+    int a, b = 0, c, k = 0;
     char *sp, num[MAXNUM];
     extern int n, strp, strmark[];
-    extern char str[];
+    extern char buf[];
 
-    sp = &str[strmark[strp]];
+    sp = &buf[0];
 
-    for (j = 0; (c = getchar()) != EOF; j++) {  
+    while ((c = getchar()) != EOF) {  
         if (c == 'C' && isupper(b = getchar())) {
             while (isdigit(a = getchar()))
                 num[k++] = a;
@@ -36,9 +36,11 @@ int getop() {
                 b = 0;
             }
 
-            if (c == '\n')
-                strmark[strp++] = j + 1;
+            if (c == '\n') {
+                *sp = '\0';
+                return STRING;
+            }
         }    
     }    
-    return STRING;
+    return c;
 }

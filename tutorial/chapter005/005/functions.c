@@ -29,19 +29,26 @@ void strncm() {
 }
 
 void strnct() {
-    char *t = &str[strmark[strp - 3]];
-    char *r = &str[strmark[strp - 2]];
+    char t[MAXLENGTH];
+    char r[MAXLENGTH];
+    char *tp, *rp;
+    t = pop();
+    r = pop();
 
-    printf("T - %s", t);
+    *tp = &t[0];
+    *rp = &r[0];
 
-   while (*t++ != '\n')
+    printf("T - %s, R - %s", tp, rp);
+
+   while (*tp++ != '\n')
         ;
-    t--;
+    tp--;
 
     while (n-- > 0) 
-        if ((*t++ = *r++) == '\n')
+        if ((*tp++ = *rp++) == '\n')
             break;
-    *t = '\0';
+    *tp = '\0';
+    push(t);
 
     printf("%s", str);
 }
