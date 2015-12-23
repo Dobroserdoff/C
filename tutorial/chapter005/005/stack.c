@@ -22,24 +22,22 @@ void push(char *s) {
         *t = '\0';
         strmark[strp] = strmark[strp - 1] + (i - 1);
         strp++;
-        printf("STR - %s, MARK - %d, POS - %d\n", str, strmark[strp - 1], strp);
     }    
     else
         printf("push error: stack is full");
 }
  
-/*char pop(void) {
-    char *t = &str[strmark[strp - 2]]; 
-    static char *zero = NULL;
- 
+char pop(void) {
+    char *r, *zero = NULL;
+    r = &str[strmark[strp - 2]];
 
     if (strp > 1) {
         strp--;
-        printf("POP - %s", t);
+        return r;
     }
     else
     {
         printf("pop error: stack is empty\n");
         return *zero;
     }
-}*/
+}

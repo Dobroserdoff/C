@@ -12,7 +12,7 @@ int main() {
            
     while ((type = getop()) != EOF) {
         switch (type) {
-           /*case COPY:
+            case COPY:
                 strncp();
                 break;
             case COMPARE:
@@ -23,7 +23,7 @@ int main() {
                 break;
             case DELETE:
                 strncd();
-                break;*/
+                break;
             case STRING:
                 push(buf);
                 break;

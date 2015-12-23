@@ -29,30 +29,29 @@ void strncm() {
 }
 
 void strnct() {
-    char t[MAXLENGTH];
-    char r[MAXLENGTH];
-    char *tp, *rp;
-    t = pop();
-    r = pop();
+    if (n > 2) {
+        char *t, *r, *q;
+        t = pop();
+        r = pop();
+        q = r;
 
-    *tp = &t[0];
-    *rp = &r[0];
+        while (*r++ != '\n')
+            ;
+        *r--;
 
-    printf("T - %s, R - %s", tp, rp);
+        while (n-- >= 0) 
+            if((*r++ = *t++) == '\n')
+                break;
 
-   while (*tp++ != '\n')
-        ;
-    tp--;
+        *r = '\0';
+        printf("Q - %s", q);
+        push(q);
 
-    while (n-- > 0) 
-        if ((*tp++ = *rp++) == '\n')
-            break;
-    *tp = '\0';
-    push(t);
-
-    printf("%s", str);
+        printf("%s", str);
+    }
+    else
+        printf("concatenation error: insufficient data to operate");
 }
-
 
 void strncd() {
     if (n != 0) {
