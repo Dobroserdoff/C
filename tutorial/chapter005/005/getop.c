@@ -6,7 +6,7 @@
 int getop() {
     int a, b = 0, c, k = 0;
     char *sp, num[MAXNUM];
-    extern int n, strp, strmark[];
+    extern int n;
     extern char buf[];
 
     sp = &buf[0];

@@ -3,16 +3,15 @@
 #include "str.h"
 
 int n = 0, i, strp = 0; 
-int strmark[MAXVAL];
-char buf[MAXLENGTH], str[MAXLENGTH] = "";
+char buf[MAXLENGTH];
+char *str[MAXVAL];
 
 int main() {
     int type;
-    strmark[strp++] = 0;
            
     while ((type = getop()) != EOF) {
         switch (type) {
-            case COPY:
+            /*case COPY:
                 strncp();
                 break;
             case COMPARE:
@@ -23,7 +22,7 @@ int main() {
                 break;
             case DELETE:
                 strncd();
-                break;
+                break;*/
             case STRING:
                 push(buf);
                 break;

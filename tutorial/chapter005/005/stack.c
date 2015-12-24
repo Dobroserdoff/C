@@ -1,28 +1,21 @@
 #include <stdio.h>
 #include "str.h"
 
-extern int n, strp, strmark[];
-extern char str[];
+extern int n, strp;
+extern char *str[];
 
 void push(char *s) {
-    int i;
     char *t;
-    t = &str[0];
-
-    if (strp > 1) {
-        t = &str[strmark[strp - 2]];
-        while (*t++ != '\0')
-            ;
-        *t--;
-    }
-
+    (str[strp]) ? : (str[strp] = NULL);
+    t = &str[strp][0];
+    printf("%c", *t);
+}
+/*    
     if (strp < MAXVAL) {
-        for (i = 0; *t++ = *s++; i++)
-            ;
+     while (*t++ = *s++)
+            printf("%s ", t - 1);
         *t = '\0';
-        strmark[strp] = strmark[strp - 1] + (i - 1);
-        strp++;
-    }    
+    }
     else
         printf("push error: stack is full");
 }
@@ -40,4 +33,4 @@ char pop(void) {
         printf("pop error: stack is empty\n");
         return *zero;
     }
-}
+}*/
