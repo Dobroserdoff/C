@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-#define MAXLENGTH 1000 /* max size of stack string */
+#define MAXLENGTH 1000 /* max size of stack element */
 #define STRING '0' /* signal that a string was found */
 #define COPY '1' /* signal to copy strings */
 #define COMPARE '2' /* signal to compare strings */
@@ -13,6 +15,6 @@ int getop();
 void strncp();
 void strncm();
 void strnct();
-void strnd();
-
-
+void strndel();
+void push(char *s);
+char pop(void);
