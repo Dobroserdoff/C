@@ -1,60 +1,68 @@
 #include "str.h"
 
+extern int strp, n;
+extern char str[MAXVAL][MAXLENGTH];
+
 void strncp() {
-	char *t = &str[--strp];
-	char *r = &str[--strp];
+	char *t = &str[strp - 1][0];
+	char *r = &str[strp - 2][0];
 
-	while (n-- > 0 && *t != '\n')
-		*r++ = *t++;
+	if (n == -1)
+		n = strlen(r);
+	
+	while (n-- > 0 && *r != '\n')
+		*t++ = *r++;
 
-	printf("%s", str);
+	printf("copy result: %s", str[strp - 1]);
 }
 
 void strncm() {
-	char *t = &str[--strp];
-	char *r = &str[--strp];
+	char *t = &str[strp - 1][0];
+	char *r = &str[strp - 2][0];
 
-	for (n; *r++ == *t++, n > 0; n--)
-		if (*t == '\n')
+	if (n == -1)
+		n = strlen(r);
+
+	while (*t++ == *r++ && n-- > 0)
+		if (*r == '\n')
 			break;
 
-	if (*t == *r || *t == '\n')
-		printf("Compare result: 0");
+	if (*--r == *--t || *r == '\n')
+		printf("compare result: 0\n");
 	else
-		printf("Compare result: %d", *t - *r);
+		printf("compare result: %d\n", *r - *t);
 }
 
 void strnct() {
-	if (n > 2) {
-		char *t, *r, *q;
-		t = pop();
-		r = pop();
-		q = r;
+	char *t = &str[strp - 1][0];
+	char *r = &str[strp - 2][0];
+	char q[MAXLENGTH], *qp;
 
-		while (*r++ != '\n')
+	qp = &q[0];
+
+	if (n == -1)
+		n = strlen(r);
+
+	while (n-- > 0 && *r != '\n')
+		*qp++ = *r++;
+
+	while ((*qp++ = *t++) != '\n')
 			;
-		*r--;
+	
+	*qp = '\0';
+	strp--;
+	push(q);
 
-		while (n-- >= 0)
-			if ((*r++ = *t++) == '\n')
-				break;
-
-		*r = '\0';
-		printf("Q - %s", q);
-		push(q);
-
-		printf("%s", str);
-	}
-	else
-		printf("concatenation error: insufficient data to operate");
+	printf("concatenation result: %s", str[strp - 1]);
 }
 
 void strndel() {
-	if (n != 0) {
-		str[strp - 1][-1 - n] = '\0';
-		str[strp - 1][-2] = '\n';
-	}
+	if (n == -1 || n >= strlen(str[strp - 1]))
+		str[--strp][0] = '\0';
+	else {
+		str[strp - 1][strlen(str[strp - 1]) - (n + 1)] = '\n';
+		str[strp - 1][strlen(str[strp - 1]) - (n)] = '\0';
+    }
 
-	else
-		pop();
+	printf("top stack position after deletion: %s", str[strp - 1]);
 }

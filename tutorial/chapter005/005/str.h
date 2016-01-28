@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #define MAXLENGTH 1000 /* max size of stack element */
 #define STRING '0' /* signal that a string was found */
@@ -17,4 +18,3 @@ void strncm();
 void strnct();
 void strndel();
 void push(char *s);
-char pop(void);

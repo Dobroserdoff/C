@@ -2,9 +2,9 @@
 
 sep="\n=================================\n"
 
-printf "\nString stack operator:\n"
+printf "\nText processor:\n"
 
-gcc -o stroper main.c getop.c functions.c
+gcc -o stroper str.h main.c getop.c functions.c stack.c
 ./stroper <input.txt >output.txt
 
 printf "$sep\nInput:\n\n"

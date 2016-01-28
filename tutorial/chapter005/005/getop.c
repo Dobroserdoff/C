@@ -1,6 +1,6 @@
 #include "str.h"
 
-extern unsigned int strp, n;
+extern int strp, n;
 extern char buf[];
 
 int getop() {
@@ -11,10 +11,14 @@ int getop() {
 
 	while ((c = getchar()) != EOF) {
 		if (c == 'C' && isupper(b = getchar())) {
-			while (isdigit(a = getchar()))
+			if (isdigit(a = getchar())) {
 				num[k++] = a;
-			num[k] = '\0';
-			n = atoi(num);
+				while (isdigit(a = getchar()))
+					num[k++] = a;
+				n = atoi(num);
+			}
+			else
+				n = -1;
 
 			if (b == 'P')
 				return COPY;

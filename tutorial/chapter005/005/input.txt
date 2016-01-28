@@ -1,11 +1,12 @@
-In the internal representation, the array is terminated with the null character '\0'
+In the internal representation, the array is terminated with the null character '\0' 
 so that programs can find the end.
-CT33
-In the internal representation, one more than the number of characters
-upabove the double quotes.
-between
-CP7
-CD
-CT25
-CM31
+CT
+skjnv;qr;r;gj;alkwjglajwr;glj;i one more than the number of characters
+CP31
+CM30
 CM50
+CD14
+between
+upabove the double quotes.
+CP
+CD
