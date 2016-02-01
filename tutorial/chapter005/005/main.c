@@ -13,28 +13,40 @@ int main() {
 					strncp();
 				else
 					printf("copy error: insufficient data to proceed\n");
-			    break;
+				break;
 			case COMPARE:
 				if (strp > 1)
 					strncm();
 				else
 					printf("compare error: insufficient data to proceed\n");
-			    break;
+				break;
 			case CONCATENATE:
 				if (strp > 1)
 					strnct();
 				else
 					printf("compare error: insufficient data to proceed\n");
-			    break;
+				break;
 			case DELETE:
-			    strndel();
-			    break;
-		    case STRING:
-			    push(buf);
-			    break;
-		    default:
-			    printf("main error: unknown command\n");
-			    break;
+				strndel();
+				break;
+			case COMPUTE:
+				strncomp();
+				break;
+			case REVERSE:
+				strnrev();
+				break;
+			case STRING:
+				push(buf);
+				break;
+			case INDEX:
+				if (strp > 1)
+					strnidx();
+				else
+					printf("index error: insufficient data to proceed\n");
+				break;
+			default:
+				printf("main error: unknown command\n");
+				break;
 		}
 	}
 	return 0;

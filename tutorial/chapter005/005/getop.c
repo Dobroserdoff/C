@@ -28,6 +28,12 @@ int getop() {
 				return CONCATENATE;
 			else if (b == 'D')
 				return DELETE;
+			else if (b == 'U')
+				return COMPUTE;
+			else if (b == 'R')
+				return REVERSE;
+			else if (b == 'I')
+				return INDEX;
 		}
 
 		else {
