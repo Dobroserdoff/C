@@ -1,22 +1,26 @@
 #include "str.h"
 
 extern int strp;
-extern char str[MAXVAL][MAXLENGTH];
-extern char buf[];
+extern char buf[], *bufp, dump[MAXVAL][MAXLENGTH], *str[];
 
-void push(char *s) {
-	int i = 0;
-	char *t = &str[strp++][0];
+void push() {
+	char *s = &dump[strp][0];
+	bufp = &buf[0];
 
 	if (strp < MAXVAL) {
-		while ((*t++ = *s++) != '\n')
-			i++;
-		*t = *s;
+		while ((*s++ = *bufp++) != '\n')
+			;
+		*s = *bufp;
+	}
+	else {
+		printf("push error: stack is full");
+		strp--;
 	}
 
-	else
-		printf("push error: stack is full");
+	str[strp] = &dump[strp++][0];
 
-	while (i-- > 0)
-		buf[i] = '\0';
+	bufp = &buf[0];
+	while (*bufp)
+		*bufp++ = '\0';
+	bufp = &buf[0]; 
 }

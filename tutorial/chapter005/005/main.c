@@ -1,10 +1,12 @@
 #include "str.h"
 
 int n = 0, strp = 0;
-char buf[MAXLENGTH], str[MAXVAL][MAXLENGTH];
+char buf[MAXLENGTH], *bufp = &buf[0]; 
+char dump[MAXVAL][MAXLENGTH];
+char *str[MAXVAL];
 
 int main() {
-	int type;
+	int type, i = 0;
 
 	while ((type = getop()) != EOF) {
 		switch (type) {
@@ -16,7 +18,7 @@ int main() {
 				break;
 			case COMPARE:
 				if (strp > 1)
-					strncm();
+					printf("compare result: %d\n", strncm(str[strp - 1], str[strp - 2]));
 				else
 					printf("compare error: insufficient data to proceed\n");
 				break;
@@ -24,7 +26,24 @@ int main() {
 				if (strp > 1)
 					strnct();
 				else
-					printf("compare error: insufficient data to proceed\n");
+					printf("concatenate error: insufficient data to proceed\n");
+				break;
+			case INDEX:
+				if (strp > 1)
+					strnidx();
+				else
+					printf("index error: insufficient data to proceed\n");
+				break;
+			case SORT:
+				if (strp > 1) {
+					strnsort();
+					printf("sort result:\n");
+					i = strp;
+					while (i)
+						printf("%s", str[strp - i--]);
+				}
+				else
+					printf("sort error: insufficient data to proceed\n");
 				break;
 			case DELETE:
 				strndel();
@@ -36,13 +55,7 @@ int main() {
 				strnrev();
 				break;
 			case STRING:
-				push(buf);
-				break;
-			case INDEX:
-				if (strp > 1)
-					strnidx();
-				else
-					printf("index error: insufficient data to proceed\n");
+				push();
 				break;
 			default:
 				printf("main error: unknown command\n");

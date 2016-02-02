@@ -8,19 +8,22 @@
 #define COPY '1' /* signal to copy strings */
 #define COMPARE '2' /* signal to compare strings */
 #define CONCATENATE '3' /* signal to concatenate strings*/
-#define DELETE '4' /* signal to delete the last string  in stack */
-#define COMPUTE '5' /* signal to compute the last string in stack */
-#define REVERSE '6' /* signal to reverse the last string in stack */
-#define INDEX '7' /* signal to find the first position of additional piece in string */
+#define INDEX '4' /* signal to find the first position of additional piece in string */
+#define SORT '5' /* signal to sort stack */
+#define DELETE '6' /* signal to delete the last string  in stack */
+#define COMPUTE '7' /* signal to compute the last string in stack */
+#define REVERSE '8' /* signal to reverse the last string in stack */
 #define MAXVAL 50 /* max depth of value stack */
 #define MAXNUM 10 /* max digits of n */
 
 int getop();
+void push();
 void strncp();
-void strncm();
+int strncm();
 void strnct();
+void strnidx();
+void strnsort();
 void strndel();
 void strncomp();
 void strnrev();
-void strnidx();
-void push(char *s);
+

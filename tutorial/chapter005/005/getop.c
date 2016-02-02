@@ -1,13 +1,11 @@
 #include "str.h"
 
-extern int strp, n;
-extern char buf[];
+extern int n;
+extern char *bufp;
 
 int getop() {
 	int a, b = 0, c, k = 0;
-	char num[MAXNUM], *temp;
-
-	temp = &buf[0];
+	char num[MAXNUM];
 
 	while ((c = getchar()) != EOF) {
 		if (c == 'C' && isupper(b = getchar())) {
@@ -26,25 +24,27 @@ int getop() {
 				return COMPARE;
 			else if (b == 'T')
 				return CONCATENATE;
+			else if (b == 'I')
+				return INDEX;
+			else if (b == 'S')
+				return SORT;
 			else if (b == 'D')
 				return DELETE;
 			else if (b == 'U')
 				return COMPUTE;
 			else if (b == 'R')
 				return REVERSE;
-			else if (b == 'I')
-				return INDEX;
 		}
 
 		else {
-			*temp++ = c;
+			*bufp++ = c;
 			if (b) {
-				*temp++ = b;
+				*bufp++ = b;
 				b = 0;
 			}
 
 			if (c == '\n') {
-				*temp = '\0';
+				*bufp = '\0';
 				return STRING;
 			}
 		}
