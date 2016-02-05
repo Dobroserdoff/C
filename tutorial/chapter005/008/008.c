@@ -3,26 +3,25 @@
 #include <stdlib.h>
 
 void get_date();
-void day_of_year(int d, int m, int y);
+int get_routine(char s[]);
+void day_of_year();
 void month_day();
 
-static int daytab[2][13] = {
-	{ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
-	{ 0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }};
-static char *monthtab[] = {
-	"Illegal month",
-	"January", "February", "March",
-	"April", "May", "June",
-	"July", "August", "September",
-	"October", "November", "December"};
+int *daytab[2];
+int nonleap_array[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+int leap_array[13] = {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+char *monthtab[] = {"Illegal month", "January", "February", "March", "April", "May", "June",
+	"July", "August", "September", "October", "November", "December"};
 
 int main() {
 	int c;
+	daytab[0] = &nonleap_array[0];
+	daytab[1] = &leap_array[0];
 	printf("0 - to convert date to day\n1 - to convert day to date\n");
 	
 	while ((c = getchar()) != EOF) {
 		if (c == '0')
-			get_date();
+			day_of_year();
 		else if (c == '1')
 			month_day();
 		else
@@ -32,73 +31,33 @@ int main() {
 	return 0;
 }
 
-void get_date() {
-	int c, leap, day, month, year;
-	char *s, buf[10];
-
-	s = &buf[0];
-	printf("Day: ");
-
-	if ((c = getchar()) != '\n')
-		*s++ = c;
-
-	while ((c = getchar()) != '\n' && isdigit(c))
-		*s++ = c;
-	day = atoi(buf);
-
-	s = &buf[0];
-	printf("Month: ");
-	while ((c = getchar()) != '\n' && isdigit(c))
-		*s++ = c;
-	month = atoi(buf);
-
-	s = &buf[0];
-	printf("Year: ");
-	while ((c = getchar()) != '\n' && isdigit(c))
-		*s++ = c;
-	year = atoi(buf);
+void day_of_year() {
+	int i, leap, num = 0;
+	int day = get_routine("Day: ");
+	int month = get_routine("Month: ");
+	int year = get_routine("Year: ");
 
 	leap = (year % 4 == 0) && ((year % 400 == 0) || (year % 100 != 0));
-	if ((0 <= year) && (year <= 9999) && (1 <= month) && (month <= 12) && (1 <= day) && (day <= daytab[leap][month])) 
-		day_of_year(day, month, year);
+	if ((0 <= year) && (year <= 9999) && (1 <= month) && (month <= 12) && (1 <= day) && (day <= *(daytab[leap] + month))) {
+		for (i = 0; i < month; i++)
+			num += *(daytab[leap] + i);
+		num += day;
+		printf("%d.%d.%d is %d day of the year\n", day, month, year, num);
+	}
 	else {
 		printf("date input error: try once more\n");
-		get_date();
+		day_of_year();
 	}
 }
 
-void day_of_year(int day, int month, int year) {
-	int i, leap, num = 0;
-
-	leap = (year % 4 == 0) && ((year % 400 == 0) || (year % 100 != 0));
-	for (i = 1; i < month; i++)
-		num += daytab[leap][i];
-	printf("%d.%d.%d is %d day of the year\n", day, month, year, num);
-}
-
 void month_day() {
-	int c, i, leap, yearday, year, *dp, out;
-	char *s, buf[10], *mp;
-
-	s = &buf[0];
-	printf("Day No: ");
-
-	if ((c = getchar()) != '\n')
-		*s++ = c;
-
-	while ((c = getchar()) != '\n' && isdigit(c))
-		*s++ = c;
-	yearday = atoi(buf);
+	char *mp;
+	int i, leap, *dp, out;
+	int yearday = get_routine("Day No: ");
+	int year = get_routine("Year: ");
 	out = yearday;
-
-	s = &buf[0];
-	printf("Year: ");
-	while ((c = getchar()) != '\n' && isdigit(c))
-		*s++ = c;
-	year = atoi(buf);
-
+	
 	leap = (year % 4 == 0) && ((year % 400 == 0) || (year % 100 != 0));
-
 	if ((0 <= year) && (year <= 9999) && (1 <= yearday) && (yearday <= ((leap) ? 366 : 365))) {
 		for (i = 1; yearday > daytab[leap][i]; i++)
 			yearday -= daytab[leap][i];
@@ -112,4 +71,19 @@ void month_day() {
 		printf("date input error: try once more\n");
 		month_day();
 	}
+}
+
+int get_routine(char str[]) {
+	int c;
+	char *s, buf[10];
+
+	s = &buf[0];
+	printf("%s", str);
+
+	if ((c = getchar()) != '\n')
+		*s++ = c;
+
+	while ((c = getchar()) != '\n' && isdigit(c))
+		*s++ = c;
+	return atoi(buf);
 }
