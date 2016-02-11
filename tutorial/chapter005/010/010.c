@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     int pivot = 1, j;
     
     if ((first_check(argc, argv) == 0)) {
-        while ((*argv[argc - pivot] == '*') || (*argv[argc - pivot] == '/') || (*argv[argc - pivot] == '-') || (*argv[argc - pivot] == '+'))
+        while ((*argv[argc - pivot] == 'x') || (*argv[argc - pivot] == '/') || (*argv[argc - pivot] == '-') || (*argv[argc - pivot] == '+'))
              pivot++;
 
         for (j = 2; j <= (argc - pivot); j++)
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
 int first_check(int argc, char *argv[]) {
     if ((argc >= 5) && (strcmp(argv[1], "expr") == 0) && (isdigit(*argv[2])) &&
-        ((*argv[argc - 1] == '*') || (*argv[argc - 1] == '/') || (*argv[argc - 1] == '-') || (*argv[argc - 1] == '+')))
+        (((*argv[argc - 1] == 'x') || (*argv[argc - 1] == '/')) || ((*argv[argc - 1] == '-') || (*argv[argc - 1] == '+'))))
         return 0;
 
     else {
@@ -102,7 +102,7 @@ int expr(char C) {
         case '-':
             return (pop() - pop());
             break;
-        case '*':
+        case 'x':
             return (pop() * pop());
             break;
         case '/':
