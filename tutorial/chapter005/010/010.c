@@ -131,12 +131,10 @@ void itoa(int n) {
         *s++ = '-';
     
     *s = '\0';
-    printf("Before %s\n", buf);
     
     for (i = 0, j = strlen(buf)-1; i < j; i++, j--) {
         c = buf[i];
         buf[i] = buf[j];
         buf[j] = c;
     }
-    printf ("After %s\n", buf);
 }
