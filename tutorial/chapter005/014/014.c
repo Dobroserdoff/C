@@ -22,8 +22,7 @@ char* strclone(const char *);
 
 int main(int argc, char *argv[]) {
     int i;
-    extern int sp;
-    
+
     for (i = 1; i < argc; i++) {
         if ((*argv[i] == '-') && (argcheck(argv[i] + 1) == 0))
             ;
@@ -33,20 +32,19 @@ int main(int argc, char *argv[]) {
     readinput();
 
     if ((sp > 1) && (sp < MAXLINES))
-        quicksort((void**)strings, 0, sp - 1, (int(*)(const void*, const void*))(numeric ? numcmp : strcmp));
+        quicksort((void**)strings, 0, sp - 1, (int(*)(const void*, const void*))((numeric) ? (numcmp) : (strcmp)));
     else {
         printf("input error\n");
         return 1;
     }
 
-    printf("list of strings sorted with %s algorithm\n", numeric ? ("numeric") : ("string comparison"));
+    printf("list of strings sorted with %s %s algorithm\n", reverse ? ("reverse") : ("straight"), 
+        numeric ? ("numeric") : ("string comparison"));
 
     for (i = 0; i < sp; i++) {
         printf("%s", strings[i]);
         free(strings[i]);
     }
-
-    i = getchar();
     return 0;
 }
 
@@ -96,7 +94,7 @@ void quicksort(void *strings[], int left, int right, int(*comp)(const void *, co
     last = left;
 
     for (i = left + 1; i <= right; i++)
-        if ((*comp)(strings[i], strings[left]) < 0)
+        if ((reverse) ? ((*comp)(strings[i], strings[left]) > 0) : ((*comp)(strings[i], strings[left]) < 0))
             swap(strings, ++last, i);
 
     swap(strings, left, last);
