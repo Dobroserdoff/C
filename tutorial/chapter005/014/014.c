@@ -13,8 +13,11 @@ int numeric = 0;
 int reverse = 0;
 int fold = 0;
 int direct = 0;
+int segment = 0;
+int segmentstart, segmentend;
 
 int argcheck(char *);
+int getsegment(char* argv[], int);
 int readinput(void);
 void quicksort(int, int, int(*)(const void *, const void *));
 int numcmp(const char *, const char *);
@@ -25,8 +28,10 @@ int main(int argc, char *argv[]) {
     int i;
     
     for (i = 1; i < argc; i++) {
-        if ((*argv[i] == '-') && (argcheck(argv[i] + 1) == 0))
-            ;
+        if ((*argv[i]++ == '-') && (argcheck(argv[i]) == 0)) {
+            if ((*argv[i]) == 's')
+                i = getsegment(argv, i);
+        }
         else
             printf("invalid arguments: try once again\n");
     }
@@ -44,11 +49,14 @@ int main(int argc, char *argv[]) {
     printf("list of strings sorted with %s %s %s %s algorithm\n", direct ? "direct" : "",
         reverse ? "reverse" : "straight", numeric ? "numeric" : "string comparison", fold ? "folded" : "");
     
+    if (segment == 1)
+        printf("strings were sorted by segments from %d to %d elements\n", segmentstart, segmentend);
+
     for (i = 0; i < sp; i++) {
         printf("%s", strings[i]);
         free(strings[i]);
     }
-   
+
     return 0;
 }
 
@@ -67,14 +75,37 @@ int argcheck(char *s) {
         case 'd':
             direct = 1;
             break;
+        case 's':
+            segment = 1;
+            break;
         default:
             return 1;
         }
     return 0;
 }
 
+int getsegment(char *argv[], int i) {
+    int a = 0, b = 0, temp;
+
+    if (isdigit(*argv[i + 1]))
+        a = atoi(argv[++i]);
+    if (isdigit(*argv[i + 1]))
+        b = atoi(argv[++i]);
+
+    if (a > b) {
+        temp = b;
+        b = a;
+        a = temp;
+    }
+
+    segmentstart = a;
+    segmentend = b;
+
+    return i;
+}
+
 int readinput(void) {
-    int c;
+    int i, c;
     char *s, *p, string[MAX], proper[MAX];
     s = string;
     p = proper;
@@ -89,7 +120,15 @@ int readinput(void) {
             *p = '\0';
             strings[sp] = strclone(string);
             
-            if (proper[0] != '\n')
+            if ((proper[0] != '\n') && (segment != 0) && (segmentend != 0)) {
+                p = proper;
+                proper[segmentend] = '\n';
+                proper[segmentend + 1] = '\0';
+                for (i = segmentstart; i > 0; i--)
+                    *p++;
+                propers[sp++] = strclone(p);
+            }
+            else if (proper[0] != '\n')
                 propers[sp++] = strclone(proper);
             else
                 return 1;
