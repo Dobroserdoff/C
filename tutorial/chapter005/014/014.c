@@ -29,6 +29,10 @@ int main(int argc, char *argv[]) {
         else
             printf("invalid arguments: try once again\n");
     }
+
+    if (numeric == 1)
+        fold = 0;
+
     readinput();
 
     if ((sp > 1) && (sp < MAXLINES))
@@ -38,8 +42,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    printf("list of strings sorted with %s %s algorithm\n", reverse ? ("reverse") : ("straight"), 
+    printf("list of strings sorted with %s %s algorithm", reverse ? ("reverse") : ("straight"), 
         numeric ? ("numeric") : ("string comparison"));
+    
+    if (fold == 1)
+        printf(" (folded)\n");
+    else
+        putchar('\n');
 
     for (i = 0; i < sp; i++) {
         printf("%s", strings[i]);
@@ -75,7 +84,7 @@ void readinput(void) {
     s = string;
 
     while ((c = getchar()) != EOF) {
-        *s++ = c;
+        (fold == 1) ? (*s++ = tolower(c)) : (*s++ = c);
         if (c == '\n') {
             *s = '\0';
             strings[sp++] = strclone(string);
