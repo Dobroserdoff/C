@@ -7,6 +7,7 @@
 #define MAX 120
 
 char *strings[MAX];
+char *propers[MAX];
 int sp = 0;
 int numeric = 0;
 int reverse = 0;
@@ -14,15 +15,15 @@ int fold = 0;
 int direct = 0;
 
 int argcheck(char *);
-void readinput(void);
-void quicksort(void *strings[], int, int, int(*)(const void *, const void *));
+int readinput(void);
+void quicksort(int, int, int(*)(const void *, const void *));
 int numcmp(const char *, const char *);
-void swap(void *strings[], int, int);
+void swap(int, int);
 char* strclone(const char *);
 
 int main(int argc, char *argv[]) {
     int i;
-
+    
     for (i = 1; i < argc; i++) {
         if ((*argv[i] == '-') && (argcheck(argv[i] + 1) == 0))
             ;
@@ -33,27 +34,21 @@ int main(int argc, char *argv[]) {
     if (numeric == 1)
         fold = 0;
 
-    readinput();
-
-    if ((sp > 1) && (sp < MAXLINES))
-        quicksort((void**)strings, 0, sp - 1, (int(*)(const void*, const void*))((numeric) ? (numcmp) : (strcmp)));
+    if ((readinput() == 0) && ((sp > 1) && (sp < MAXLINES)))
+        quicksort(0, sp - 1, (int(*)(const void*, const void*))((numeric) ? (numcmp) : (strcmp)));
     else {
         printf("input error\n");
         return 1;
     }
 
-    printf("list of strings sorted with %s %s algorithm", reverse ? ("reverse") : ("straight"), 
-        numeric ? ("numeric") : ("string comparison"));
+    printf("list of strings sorted with %s %s %s %s algorithm\n", direct ? "direct" : "",
+        reverse ? "reverse" : "straight", numeric ? "numeric" : "string comparison", fold ? "folded" : "");
     
-    if (fold == 1)
-        printf(" (folded)\n");
-    else
-        putchar('\n');
-
     for (i = 0; i < sp; i++) {
         printf("%s", strings[i]);
         free(strings[i]);
     }
+   
     return 0;
 }
 
@@ -78,37 +73,50 @@ int argcheck(char *s) {
     return 0;
 }
 
-void readinput(void) {
+int readinput(void) {
     int c;
-    char *s, string[MAX];
+    char *s, *p, string[MAX], proper[MAX];
     s = string;
+    p = proper;
 
     while ((c = getchar()) != EOF) {
-        (fold == 1) ? (*s++ = tolower(c)) : (*s++ = c);
+        *s++ = c;
+        if ((direct == 1 && ispunct(c) == 0) || (direct == 0))
+            *p++ = (fold == 1) ? (tolower(c)) : c;
+
         if (c == '\n') {
             *s = '\0';
-            strings[sp++] = strclone(string);
+            *p = '\0';
+            strings[sp] = strclone(string);
+            
+            if (proper[0] != '\n')
+                propers[sp++] = strclone(proper);
+            else
+                return 1;
+            
             s = string;
+            p = proper;
         }
     }
+    return 0;
 }
 
-void quicksort(void *strings[], int left, int right, int(*comp)(const void *, const void *)) {
+void quicksort(int left, int right, int(*comp)(const void *, const void *)) {
     int i, last;
     
     if (left >= right) 
         return; 
 
-    swap(strings, left, (left + right) / 2);
+    swap(left, (left + right) / 2);
     last = left;
 
     for (i = left + 1; i <= right; i++)
-        if ((reverse) ? ((*comp)(strings[i], strings[left]) > 0) : ((*comp)(strings[i], strings[left]) < 0))
-            swap(strings, ++last, i);
+        if ((reverse) ? ((*comp)(propers[i], propers[left]) > 0) : ((*comp)(propers[i], propers[left]) < 0))
+            swap(++last, i);
 
-    swap(strings, left, last);
-    quicksort(strings, left, last - 1, comp);
-    quicksort(strings, last + 1, right, comp);
+    swap(left, last);
+    quicksort(left, last - 1, comp);
+    quicksort(last + 1, right, comp);
 }
 
 int numcmp(const char *s1, const char *s2) {
@@ -124,9 +132,13 @@ int numcmp(const char *s1, const char *s2) {
         return 0;
 }
 
-void swap(void *strings[], int i, int j) {
+void swap(int i, int j) {
     void *temp;
     
+    temp = propers[i];
+    propers[i] = propers[j];
+    propers[j] = temp;
+
     temp = strings[i];
     strings[i] = strings[j];
     strings[j] = temp;
