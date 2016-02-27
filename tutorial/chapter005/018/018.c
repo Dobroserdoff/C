@@ -5,7 +5,7 @@
 #define MAXTOKEN 100
 #define BUFSIZE 100
 
-enum {NAME, PARENS, BRACKETS};
+enum {NAME, PARENS, BRACKETS, POINTERS};
 
 void dcl(void);
 void dirdcl(void);
@@ -21,12 +21,14 @@ char datatype[MAXTOKEN];
 char out[1000];
 char buf[BUFSIZE];
 int bufp = 0;
+int flag = 0;
 
 int main(int argc, char* argv[]) {
     while (gettoken() != EOF) {
         out[0] = '\0';
 
         if ((argc > 1) && (strcmp(argv[1], "-u") == 0)) {
+            flag = 1;
             undcl();
             printf("%s\n", out);
         }
@@ -55,6 +57,12 @@ int gettoken(void) {
         if ((c = getch()) == ')') {
             strcpy(token, "()");
             return tokentype = PARENS;
+        }
+        
+        else if  ((flag == 1) && (c == '*')){
+            while ((c = getch()) != ')')
+                ;
+            return tokentype = POINTERS;
         }
 
         else {
@@ -140,9 +148,14 @@ void undcl(void) {
     while ((type = gettoken()) != '\n') {
         if (type == PARENS || type == BRACKETS)
             strcat(out, token);
+        
+        else if (type == POINTERS) {
+            sprintf(temp, "(*%s)", out);
+            strcpy(out, temp);
+        }        
 
         else if (type == '*') {
-            sprintf(temp, "(*%s)", out);
+            sprintf(temp, "*%s", out);
             strcpy(out, temp);
         }
 

@@ -1,3 +1,4 @@
-x () * [] * () char
 name [] * * int
+x (*) []
+a (*) () double
 f () void
