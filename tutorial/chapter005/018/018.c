@@ -1,11 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 #define MAXTOKEN 100
 #define BUFSIZE 100
 
-enum {NAME, PARENS, BRACKETS, POINTERS};
+enum {NAME, PARENS, BRACKETS, POINTERS, ARGUMENTS};
 
 void dcl(void);
 void dirdcl(void);
@@ -13,17 +14,18 @@ void undcl(void);
 int gettoken(void);
 int getch(void);
 void ungetch(int);
+char* strclone(const char *s);
 
 int tokentype;
+int bufp = 0;
+int flag = 0;
 char token[MAXTOKEN];
 char name[MAXTOKEN];
 char datatype[MAXTOKEN];
 char out[1000];
 char buf[BUFSIZE];
-int bufp = 0;
-int flag = 0;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     while (gettoken() != EOF) {
         out[0] = '\0';
 
@@ -36,6 +38,7 @@ int main(int argc, char* argv[]) {
         else {
             strcpy(datatype, token);
             dcl();
+
             if (tokentype != '\n')
                 printf("syntax error\n");
 
@@ -46,7 +49,7 @@ int main(int argc, char* argv[]) {
 }
 
 int gettoken(void) {
-    int c, getch(void);
+    int i = 0, c, getch(void);
     void ungetch(int);
     char *p = token;
 
@@ -58,11 +61,19 @@ int gettoken(void) {
             strcpy(token, "()");
             return tokentype = PARENS;
         }
-        
-        else if  ((flag == 1) && (c == '*')){
+
+        else if ((flag == 1) && (c == '*')) {
             while ((c = getch()) != ')')
                 ;
             return tokentype = POINTERS;
+        }
+
+        else if (islower(c) != 0) {
+            *p++ = c;
+            while ((c = getch()) != ')')
+                *p++ = c;
+            *p = '\0';
+            return tokentype = ARGUMENTS;
         }
 
         else {
@@ -114,7 +125,7 @@ void dcl(void) {
 }
 
 void dirdcl(void) {
-    int type;
+    int i = 0, type;
 
     if (tokentype == '(') {
         dcl();
@@ -128,8 +139,13 @@ void dirdcl(void) {
     else
         printf("error: expected name or (dcl)\n");
     
-    while ((type = gettoken()) == PARENS || type == BRACKETS) {
-        if (type == PARENS)
+    while ((type = gettoken()) == ARGUMENTS || type == PARENS || type == BRACKETS) {
+        if (type == ARGUMENTS) {
+            strcat(out, " function accepting ");
+            strcat(out, token);
+            strcat(out, " and returning");
+        }
+        else if (type == PARENS)
             strcat(out, " function returning");
         else {
             strcat(out, " array");
@@ -146,13 +162,13 @@ void undcl(void) {
     strcpy(out, token);
 
     while ((type = gettoken()) != '\n') {
-        if (type == PARENS || type == BRACKETS)
-            strcat(out, token);
-        
-        else if (type == POINTERS) {
+        if (type == POINTERS) {
             sprintf(temp, "(*%s)", out);
             strcpy(out, temp);
-        }        
+        }
+
+        else if ((type == PARENS) || (type == BRACKETS))
+            strcat(out, token);
 
         else if (type == '*') {
             sprintf(temp, "*%s", out);
@@ -167,4 +183,14 @@ void undcl(void) {
         else
             printf("invalid input at %s\n", token);
     }
+}
+
+char* strclone(const char *s) {
+    char *result, *buf = malloc(strlen(s) + 1);
+    result = buf;
+
+    while ((*buf++ = *s++) != '\0')
+        ;
+
+    return result;
 }
