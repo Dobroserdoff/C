@@ -1,7 +1,7 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+"#include <string.h>
+#include <ctype.h>"
 
 #define MAXTOKEN 100
 #define BUFSIZE 100
@@ -19,11 +19,11 @@ char* strclone(const char *s);
 int tokentype;
 int bufp = 0;
 int flag = 0;
-char token[MAXTOKEN];
-char name[MAXTOKEN];
-char datatype[MAXTOKEN];
-char out[1000];
-char buf[BUFSIZE];
+/* _char token[MAXTOKEN];
+_char name[MAXTOKEN];
+_char datatype[MAXTOKEN];
+_char out[1000];
+_char buf[BUFSIZE]; */
 
 int main(int argc, char *argv[]) {
     while (gettoken() != EOF) {
