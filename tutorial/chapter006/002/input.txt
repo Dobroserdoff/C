@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAXWORD 100
+#define BUFSIZE 100
+
+struct key {
+    char *word;
+    int count;
+} keytab[] = {
+    "#include", 0,
+    "_char", 0,
+    "auto", 0,
+    "break", 0,
+    "case", 0,
+    "char", 0,
+    "const", 0,
+    "continue", 0,
+    "default", 0,
+    "else", 0,
+    "if", 0,
+    "include", 0,
+    "int", 0,
+    "unsigned", 0,
+    "void", 0,
+    "volatile", 0,
+    "while", 0
+};
+/* int flag = 0; */
+int bufp = 0;
+char buf[BUFSIZE];
+
+int getch(void);
+//void ungetch(int c);
+int getword(char *, int);
+int bsearch(char *, struct key *, int);
