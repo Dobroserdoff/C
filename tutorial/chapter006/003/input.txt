@@ -1,0 +1,21 @@
+Suppose we want to handle the more general problem of counting the occurrences of all the
+words in some input. Since the list of words isn't known in advance, we can't conveniently sort
+it and use a binary search. Yet we can't do a linear search for each word as it arrives, to see if
+it's already been seen; the program would take too long. (More precisely, its running time is
+114
+likely to grow quadratically with the number of input words.) How can we organize the data to
+copy efficiently with a list or arbitrary words?
+One solution is to keep the set of words seen so far sorted at all times, by placing each word
+into its proper position in the order as it arrives. This shouldn't be done by shifting words in a
+linear array, though - that also takes too long. Instead we will use a data structure called a
+binary tree.
+The tree contains one ``node'' per distinct word; each node contains
+· A pointer to the text of the word,
+· A count of the number of occurrences,
+· A pointer to the left child node,
+· A pointer to the right child node.
+No node may have more than two children; it might have only zero or one.
+The nodes are maintained so that at any node the left subtree contains only words that are
+lexicographically less than the word at the node, and the right subtree contains only words that
+are greater. This is the tree for the sentence ``now is the time for all good men to come to the
+aid of their party'', as built by inserting each word as it is encountered:
