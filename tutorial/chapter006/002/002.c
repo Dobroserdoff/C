@@ -10,34 +10,72 @@
 struct tnode *addtree(struct tnode *, char *);
 int getword(char *, int);
 int getch(void);
-void ungetch(int c);
-void treeprint(struct tnode *);
+void ungetch(int);
+void treeprint(struct tnode *, int);
 struct tnode *talloc(void);
 char *strdupl(char *);
 
 struct tnode {
     char *word;
     int count;
+    int print;
     struct tnode *left;
     struct tnode *right;
-};
+} *d;
+
+int units = 0;
+int printed = 0;
 int flag = 0;
 int bufp = 0;
 char buf[BUFSIZE];
 
 int main(int argc, char *argv[]) {
     int maxword = 6;
-    struct tnode *root;
-    char word[MAXWORD];
+    struct tnode *root, *dummy;
+    char word[MAXWORD];    
     root = NULL;
-
+    
     if (argc > 1)
         maxword = abs(atoi(argv[1]));
 
     while (getword(word, maxword) != EOF)
         if (strlen(word) == maxword && isalpha(word[0]))
             root = addtree(root, word);
-    treeprint(root);
+
+    if ((argc > 2) && (strcmp(argv[2], "-d") == 0)) {
+        dummy = talloc();
+        dummy->word = strdupl("");
+        dummy->count = 0;
+        dummy->print = 0;
+        dummy->left = dummy->right = NULL;
+
+        while (printed < units) {
+            d = dummy;
+            treeprint(root, 1);
+            printf("%4d %s\n", d->count, d->word);
+            d->print = 1;
+            printed++;
+        }
+    }
+
+    else if ((argc > 2) && (strcmp(argv[2], "-r") == 0)) {
+        dummy = talloc();
+        dummy->word = strdupl("");
+        dummy->count = 100;
+        dummy->print = 0;
+        dummy->left = dummy->right = NULL;
+        
+        while (printed < units) {
+            d = dummy;
+            treeprint(root, 2);
+            printf("%4d %s\n", d->count, d->word);
+            d->print = 1;
+            printed++;
+        }
+    }
+
+    else
+        treeprint(root, 0);
 
     return 0;
 }
@@ -119,7 +157,9 @@ struct tnode *addtree(struct tnode *p, char *w) {
         p = talloc(); 
         p->word = strdupl(w);
         p->count = 1;
+        p->print = 0;
         p->left = p->right = NULL;
+        units++;
     }
     
     else if ((cond = strcmp(w, p->word)) == 0)
@@ -134,12 +174,29 @@ struct tnode *addtree(struct tnode *p, char *w) {
     return p;
 }
 
-void treeprint(struct tnode *p) {
-    if (p != NULL) {
-        treeprint(p->left);
-        printf("%4d %s\n", p->count, p->word);
-        treeprint(p->right);
-    }
+void treeprint(struct tnode *p, int k) {
+    if (k == 0)
+        if (p != NULL) {
+            treeprint(p->left, 0);
+            printf("%4d %s\n", p->count, p->word);
+            treeprint(p->right, 0);
+        }
+    
+    if (k == 1)
+        if (p != NULL) {
+            treeprint(p->left, 1);
+            if ((p->print == 0) && (p->count >= d->count))
+                d = p;
+            treeprint(p->right, 1);
+        }
+    
+    if (k == 2)
+        if (p != NULL) {
+            treeprint(p->left, 2);
+            if ((p->print == 0) && (p->count <= d->count))
+                d = p;
+            treeprint(p->right, 2);
+        }
 }
 
 struct tnode *talloc(void) {
