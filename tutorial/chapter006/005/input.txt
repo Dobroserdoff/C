@@ -1,0 +1,4 @@
+There is one exception: 
+the address of the first element 
+past the end of an array can be used in
+pointer arithmetic.
