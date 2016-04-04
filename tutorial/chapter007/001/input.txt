@@ -1,0 +1,4 @@
+Many programs read only one input stream and write only one output stream; for such
+programs, input and output with getchar, putchar, and printf may be entirely adequate,
+and is certainly enough to get started. This is particularly true if redirection is used to connect
+the output of one program to the input of the next.
