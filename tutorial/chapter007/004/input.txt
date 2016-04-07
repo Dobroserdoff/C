@@ -1,0 +1,3 @@
+The model can now be elaborated to illustrate further pointer constructions.
+123 456 789
+123.45
