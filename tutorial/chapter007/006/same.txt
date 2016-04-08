@@ -1,0 +1,6 @@
+When a C program is started, the operating system environment is responsible for opening
+three files and providing pointers for them. These files are the standard input, the standard
+output, and the standard error; the corresponding file pointers are called stdin, stdout, and
+stderr, and are declared in <stdio.h>. Normally stdin is connected to the keyboard and
+stdout and stderr are connected to the screen, but stdin and stdout may be redirected to
+files or pipes as described in Section 7.1.
