@@ -1,0 +1,2 @@
+The function unlink(char *name) removes the file name from the file system. It corresponds
+to the standard library function remove.
