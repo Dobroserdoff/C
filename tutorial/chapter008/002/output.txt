@@ -1,4 +1,0 @@
-A different kind of file system interaction is sometimes called for - determining information
-about a file, not what it contains. A directory-listing program such as the UNIX command ls
-is an example - it prints the names of files in a directory, and, optionally, other information,
-such as sizes, permissions, and so on. The MS-DOS dir command is analogous.
