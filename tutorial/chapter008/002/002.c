@@ -44,23 +44,23 @@ FILE *fileopen(char *name, char *mode);
 int _fillbuf(FILE *);
 void _flushbuf(int, FILE *);
 void _fflush (FILE *);
-void fileclose(int);
+int _fseek(FILE *, int, int);
 
 int main(int argc, char *argv[]) {
     int c;
     FILE *api = stdin, *apo = stdout;
 
     if (argc > 1)
-        api = fileopen(argv[1], "r");
-    if (argc > 2)
-        apo = fileopen(argv[2], "w");
+        api = fileopen(argv[1], argv[2]);
+    if (argc > 3)
+        apo = fileopen(argv[3], argv[4]);
 
     while ((c = getc(api)) != EOF)
         putc(c, apo);
     
     _fflush(apo);
-    //fileclose(api->fd);
-    //fileclose(apo->fd);
+    close(api->fd);
+    close(apo->fd);
 
     return 0;
 }
@@ -87,7 +87,7 @@ FILE *fileopen(char *name, char *mode){
             fd = creat(name, PERMS);
             lseek(fd, 0L, 2);
     }
-    
+
     else
         fd = open(name, O_RDONLY, 0);
 
@@ -139,10 +139,4 @@ void _fflush(FILE *fp) {
     free(fp->base);
     fp->flag = 0;
     fp->fd = 0;
-}
-
-void fileclose(int fd) {
-    int i;
-
-    i = close(fd);
 }

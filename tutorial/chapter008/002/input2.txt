@@ -1,0 +1,5 @@
+Since a UNIX directory is just a file, ls need only read it to retrieve the filenames. But is is
+necessary to use a system call to access other information about a file, such as its size. On
+other systems, a system call may be needed even to access filenames; this is the case on MSDOS
+for instance. What we want is provide access to the information in a relatively systemindependent
+way, even though the implementation may be highly system-dependent.
