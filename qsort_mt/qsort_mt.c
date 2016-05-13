@@ -9,7 +9,7 @@ struct params {
 };
 int ar[ARSIZE];
 
-int quicksort(struct params);
+void* quicksort(void*);
 
 int main() {
     int i;
@@ -25,7 +25,7 @@ int main() {
     st.size = ARSIZE;
 
     puts("\nQuicksorted array of integers:");
-    quicksort(st);
+    quicksort(&st);
 
     for (i = 0; i < ARSIZE; i++) {
         printf("%d ", ar[i]);
@@ -35,34 +35,27 @@ int main() {
     return 0;
 }
 
-int quicksort(struct params st) {
-    struct params local, left, right;
+void* quicksort(void* arg) {
+    struct params *local, left, right;
     int i, j, less, li = 0, *pivot, weight = 0;
-    //pthread_t threads[ARSIZE];
-    pivot = st.p;
+    local = arg;
+    pivot = local->p;
+    pthread_t left_t, right_t;
 
-    if (st.size <= 1) {
+    if (local->size <= 1) {
         return 0;
     }
-    /*
-    else {
-    for (i = 0; i <= ARSIZE/st.size; i++) {
-    ((i % 2) == 0) ? (local.p = st.p) : (local.p = &st.p[ARSIZE/2]);
-    local.size = ARSIZE/2;
-    pthread_create(&threads[i], 0, threadsort, (void *)local);
-    }
-    }*/
 
     else {
         for (i = 0; ar[i] != *pivot; i++, weight++);
             ;
-        while (i < (st.size + weight)) {
+        while (i < (local->size + weight)) {
             if (ar[i] < *pivot) {
                 less = ar[i];
                 for (j = i; j > weight; j--) {
                     ar[j] = ar[j - 1];
                 }
-                *st.p = less;
+                *local->p = less;
                 *pivot++;
                 li++;
             }
@@ -74,28 +67,19 @@ int quicksort(struct params st) {
         }
 
         left.size = li;
-        left.p = st.p;
+        left.p = local->p;
 
-        right.size = st.size - li;
-        right.p = st.p;
+        right.size = local->size - li;
+        right.p = local->p;
         for (i = 0; i < li; i++) {
             *right.p++;
         }
 
-        quicksort(left);
-        quicksort(right);
+        pthread_create(&left_t, 0, quicksort, (void*)(&left));
+        pthread_create(&right_t, 0, quicksort, (void*)(&right));
+
+        pthread_join(left_t, 0);
+        pthread_join(right_t, 0);
+
     }
 }
-/*
-void* threadsort(void* local) {
-int i;
-struct params *stp;
-
-puts("\nThreadsort:");
-
-for (i = 0; i < stp.size; i++) {
-printf("%d ", *stp.p++);
-}
-
-return 0;
-}*/
