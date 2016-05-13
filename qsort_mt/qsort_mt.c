@@ -3,19 +3,17 @@
 
 #define ARSIZE 20
 
-struct params{
+struct params {
     int *p;
     int size;
 };
-int buffer[ARSIZE], *buf;
+int ar[ARSIZE];
 
-int quicksort (struct params);
-void* threadsort(void* local);
+int quicksort(struct params);
 
 int main() {
-    int i, *k, ar[ARSIZE];
+    int i;
     struct params st;
-    buf = &buffer[0];
 
     puts("Unsorted array of integers:");
     for (i = 0; i < ARSIZE; i++) {
@@ -23,16 +21,15 @@ int main() {
         printf("%d ", ar[i]);
     }
 
-    st.p = &ar[0]; 
+    st.p = &ar[0];
     st.size = ARSIZE;
-    
+
     puts("\nQuicksorted array of integers:");
     quicksort(st);
-    
+
     for (i = 0; i < ARSIZE; i++) {
-        printf("%d ", buffer[i]);
+        printf("%d ", ar[i]);
     }
-    
     putchar('\n');
 
     return 0;
@@ -40,59 +37,65 @@ int main() {
 
 int quicksort(struct params st) {
     struct params local, left, right;
-    int i, *pivot, *l, *r, li = 0, ri = 0, *res, lefty[ARSIZE], righty[ARSIZE], equal, ei = 0;
-    l = left.p = &lefty[0];
-    r = right.p = &righty[0];
-    pivot = st.p;
-    res = &buffer[0];
+    int i, j, less, li = 0, *pivot, weight = 0;
     //pthread_t threads[ARSIZE];
+    pivot = st.p;
 
     if (st.size <= 1) {
-        if (st.size == 1) {
-            *buf++ = *st.p;
-        }
         return 0;
     }
     /*
     else {
-        for (i = 0; i <= ARSIZE/st.size; i++) {
-            ((i % 2) == 0) ? (local.p = st.p) : (local.p = &st.p[ARSIZE/2]);
-            local.size = ARSIZE/2;
-            pthread_create(&threads[i], 0, threadsort, (void *)local);
-        }
+    for (i = 0; i <= ARSIZE/st.size; i++) {
+    ((i % 2) == 0) ? (local.p = st.p) : (local.p = &st.p[ARSIZE/2]);
+    local.size = ARSIZE/2;
+    pthread_create(&threads[i], 0, threadsort, (void *)local);
+    }
     }*/
 
     else {
-        for (i = 0; i < st.size; i++) {
-            if (*st.p < *pivot) {
-                (*l++ = *st.p, li++);
-            } else if (*st.p > *pivot) {
-                (*r++ = *st.p, ri++);
-            } else {
-                equal = *st.p;
-                ei++;
+        for (i = 0; ar[i] != *pivot; i++, weight++);
+            ;
+        while (i < (st.size + weight)) {
+            if (ar[i] < *pivot) {
+                less = ar[i];
+                for (j = i; j > weight; j--) {
+                    ar[j] = ar[j - 1];
+                }
+                *st.p = less;
+                *pivot++;
+                li++;
             }
-            *st.p++;
+            i++;
         }
-    left.size = li;
-    right.size = ri;
-    quicksort(left);
-    while (ei-- > 0) {
-        *buf++ = equal;
-    }
-    quicksort(right);
+
+        if (li == 0) {
+            li++;
+        }
+
+        left.size = li;
+        left.p = st.p;
+
+        right.size = st.size - li;
+        right.p = st.p;
+        for (i = 0; i < li; i++) {
+            *right.p++;
+        }
+
+        quicksort(left);
+        quicksort(right);
     }
 }
 /*
 void* threadsort(void* local) {
-    int i;
-    struct params *stp;
+int i;
+struct params *stp;
 
-    puts("\nThreadsort:");
-    
-    for (i = 0; i < stp.size; i++) {
-        printf("%d ", *stp.p++);
-    }
+puts("\nThreadsort:");
 
-    return 0;
+for (i = 0; i < stp.size; i++) {
+printf("%d ", *stp.p++);
+}
+
+return 0;
 }*/
