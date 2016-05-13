@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <string.h>
 #include <pthread.h>
 
-#define ARSIZE 20
+#define ARSIZE 1000
 
 struct params {
     int *p;
@@ -41,7 +42,7 @@ void* quicksort(void* arg) {
     local = arg;
     pivot = local->p;
     pthread_t left_t, right_t;
-
+        
     if (local->size <= 1) {
         return 0;
     }
@@ -74,12 +75,24 @@ void* quicksort(void* arg) {
         for (i = 0; i < li; i++) {
             *right.p++;
         }
-
-        pthread_create(&left_t, 0, quicksort, (void*)(&left));
-        pthread_create(&right_t, 0, quicksort, (void*)(&right));
-
-        pthread_join(left_t, 0);
-        pthread_join(right_t, 0);
-
-    }
+        
+        if (left.size > 1) {
+            if (j = pthread_create(&left_t, 0, quicksort, (void*)(&left)) != 0) {
+                puts((const char*)strerror(j));
+            }
+                
+        }
+        if (right.size > 1) {
+            if (j = pthread_create(&right_t, 0, quicksort, (void*)(&right)) != 0) {
+                puts((const char*)strerror(j));
+            }
+        }
+        
+        if (left.size > 1) {
+            pthread_join(left_t, 0);
+        }
+        if (right.size > 1) {
+            pthread_join(right_t, 0);
+        }
+   }
 }
