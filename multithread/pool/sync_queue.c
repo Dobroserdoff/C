@@ -8,14 +8,14 @@ void sync_queue_init(struct sync_queue_t* queue, size_t count) {
     pthread_cond_init(&queue->single_condvar, 0);
 }
 
-void sync_queue_enqueue(struct sync_queue_t* queue, char* value) {
+void sync_queue_enqueue(struct sync_queue_t* queue, void* value) {
     pthread_mutex_lock(&queue->single_mutex);
     queue_enqueue(&queue->sp, value);
     pthread_cond_signal(&queue->single_condvar);
     pthread_mutex_unlock(&queue->single_mutex);
 }
 
-char* sync_queue_dequeue(struct sync_queue_t* queue) {
+void* sync_queue_dequeue(struct sync_queue_t* queue) {
     while (1) { 
         char *temp = NULL;
 
@@ -30,3 +30,8 @@ char* sync_queue_dequeue(struct sync_queue_t* queue) {
    }
 }
 
+void counter_plus(struct counter_t* cp) {
+    pthread_mutex_lock(&cp->counter_mutex);
+    cp->counter++;
+    pthread_mutex_unlock(&cp->counter_mutex);
+}
