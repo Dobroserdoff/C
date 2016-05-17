@@ -7,8 +7,6 @@
 
 #define POOL 4
 
-struct counter_t counter;
-
 void* single (void*);
 
 int main () {
@@ -16,7 +14,7 @@ int main () {
     pthread_t mythreads[POOL];
     struct sync_queue_t queue;
     struct params st, *stp;
-    counter.counter = 0;
+    counter = 0;
     
     puts("Unsorted array of integers:");
     for (i = 0; i < ARSIZE; i++) {
@@ -31,7 +29,6 @@ int main () {
     stp = &st;
 
     sync_queue_init(&queue, ARSIZE + POOL);   
-    counter_plus(&counter);
     sync_queue_enqueue(&queue, stp);
     
     for (i = 0; i < POOL; i++) {
@@ -48,7 +45,7 @@ int main () {
 void* single (void* param) {
     struct sync_queue_t* temp = (void*) param;
     
-    while (counter.counter > 0 && queue_empty(&temp->sp) != 1) {
+    while (counter > 0 && queue_empty(&temp->sp) != 1) {
         quicksort(&temp);
     }
     return 0;
