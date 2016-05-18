@@ -4,13 +4,12 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-void* quicksort(void* arg) {
-    struct sync_queue_t* sqp = (void*)arg;
-    struct params *local, temp, *leftp, *rightp;
+void* quicksort(void *sqp, void* sp) {
+    struct params *local = sp, temp, *leftp, *rightp;
     int i, j, less, li = 0, *pivot, weight = 0;
-    local = (struct params*) sqp->sp.start;
     pivot = local->p;
-    
+    printf("%d ", *pivot);
+
     pthread_mutex_lock(&finish_mutex); 
     counter++;  
     pthread_mutex_lock(&finish_mutex); 
@@ -22,13 +21,11 @@ void* quicksort(void* arg) {
         
         if (counter == 1) {
             pthread_cond_signal(&finish_condvar);
-            pthread_mutex_unlock(&finish_mutex);
-        } else {
-            pthread_mutex_unlock(&finish_mutex);
-        
-        } 
-        
+        }    
+
+        pthread_mutex_unlock(&finish_mutex);    
         return 0;
+
     } else {
         leftp = (struct params*) malloc(sizeof(temp));
         rightp = (struct params*) malloc(sizeof(temp));
@@ -42,7 +39,7 @@ void* quicksort(void* arg) {
                     ar[j] = ar[j - 1];
                 }
                 *local->p = less;
-                *pivot++;
+                pivot++;
                 li++;
             }
             i++;
@@ -58,7 +55,7 @@ void* quicksort(void* arg) {
         rightp->size = local->size - li;
         rightp->p = local->p;
         for (i = 0; i < li; i++) {
-            *rightp->p++;
+            rightp->p++;
         }
         
         sync_queue_enqueue(sqp, leftp);

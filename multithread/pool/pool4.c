@@ -34,13 +34,15 @@ int main () {
     for (i = 0; i < POOL; i++) {
         pthread_create(&mythreads[i], 0, single, &queue);
     }   
-
+    
     sync_queue_enqueue(&queue, stp);
     
     for (i = 0; i < POOL; i++) {
         pthread_mutex_lock(&finish_mutex);
         pthread_cond_wait(&finish_condvar, &finish_mutex);
     }
+
+    counter--;
 
     for (i = 0; i < POOL; i++) {
         pthread_join(mythreads[i], 0);
@@ -51,14 +53,15 @@ int main () {
         printf("%d ", ar[i]);
     }
     putchar('\n');
-
+    
     return 0;
 }
 
 void* single (void* param) {
     while (counter > 0) {
-        struct sync_queue_t* temp = sync_queue_dequeue(param);
-        quicksort(&temp); 
+        struct params* temp = sync_queue_dequeue(param);
+        printf("%d ", *(temp->p));
+        quicksort(param, &temp); 
     }
     return 0;
 }

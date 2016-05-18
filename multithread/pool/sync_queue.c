@@ -1,5 +1,4 @@
 #include <pthread.h>
-
 #include "sync_queue.h"
 
 void sync_queue_init(struct sync_queue_t* queue, size_t count) {

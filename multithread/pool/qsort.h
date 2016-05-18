@@ -9,4 +9,4 @@ struct params {
 };
 int ar[ARSIZE];
 
-void* quicksort(void*);
+void* quicksort(void*, void*);
