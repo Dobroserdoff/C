@@ -59,6 +59,7 @@ int main () {
 
 void* single (void* param) {
     while (counter > 0) {
+        puts("Checkpoint");
         struct params* temp = sync_queue_dequeue(param);
         printf("%d ", *(temp->p));
         quicksort(param, &temp); 
