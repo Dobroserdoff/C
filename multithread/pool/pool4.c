@@ -27,26 +27,33 @@ int main () {
     st.size = ARSIZE;
     stp = malloc(sizeof(void*));
     stp = &st;
-
+    
+    counter++;
     sync_queue_init(&queue, ARSIZE + POOL);   
-    sync_queue_enqueue(&queue, stp);
     
     for (i = 0; i < POOL; i++) {
         pthread_create(&mythreads[i], 0, single, &queue);
     }   
 
+    sync_queue_enqueue(&queue, stp);
+        
     for (i = 0; i < POOL; i++) {
         pthread_join(mythreads[i], 0);
     }
+
+    puts("Sorted array of integers:");
+    for (i = 0; i < ARSIZE; i++) {
+        printf("%d ", ar[i]);
+    }
+    putchar('\n');
 
     return 0;
 }
 
 void* single (void* param) {
-    struct sync_queue_t* temp = (void*) param;
-    
-    while (counter > 0 && queue_empty(&temp->sp) != 1) {
-        quicksort(&temp);
+    while (counter > 0) {
+        struct sync_queue_t* temp = sync_queue_dequeue(param);
+        quicksort(&temp); 
     }
     return 0;
 }

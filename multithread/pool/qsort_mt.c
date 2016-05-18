@@ -6,16 +6,20 @@
 
 void* quicksort(void* arg) {
     struct sync_queue_t* sqp = (void*)arg;
-    struct params *local, left, right;
+    struct params *local, temp, *leftp, *rightp;
     int i, j, less, li = 0, *pivot, weight = 0;
     local = (struct params*) sqp->sp.start;
     pivot = local->p;
-        
+    
+    counter++;
+   
     if (local->size <= 1) {
+        counter--;
         return 0;
-    }
-
-    else {
+    } else {
+        leftp = (struct params*) malloc(sizeof(temp));
+        rightp = (struct params*) malloc(sizeof(temp));
+ 
         for (i = 0; ar[i] != *pivot; i++, weight++)
             ;
         while (i < (local->size + weight)) {
@@ -35,18 +39,20 @@ void* quicksort(void* arg) {
             li++;
         }
 
-        left.size = li;
-        left.p = local->p;
+        leftp->size = li;
+        leftp->p = local->p;
 
-        right.size = local->size - li;
-        right.p = local->p;
+        rightp->size = local->size - li;
+        rightp->p = local->p;
         for (i = 0; i < li; i++) {
-            *right.p++;
+            *rightp->p++;
         }
         
-        sync_queue_enqueue(sqp, &left);
-
-        sync_queue_enqueue(sqp, &right);
+        sync_queue_enqueue(sqp, leftp);
+        sync_queue_enqueue(sqp, rightp);
+        free(local);
     }
+
+    counter--;
     return 0;
 }
