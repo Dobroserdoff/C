@@ -11,10 +11,23 @@ void* quicksort(void* arg) {
     local = (struct params*) sqp->sp.start;
     pivot = local->p;
     
-    counter++;
-   
+    pthread_mutex_lock(&finish_mutex); 
+    counter++;  
+    pthread_mutex_lock(&finish_mutex); 
+ 
+    
     if (local->size <= 1) {
+        pthread_mutex_lock(&finish_mutex); 
         counter--;
+        
+        if (counter == 1) {
+            pthread_cond_signal(&finish_condvar);
+            pthread_mutex_unlock(&finish_mutex);
+        } else {
+            pthread_mutex_unlock(&finish_mutex);
+        
+        } 
+        
         return 0;
     } else {
         leftp = (struct params*) malloc(sizeof(temp));
@@ -53,6 +66,9 @@ void* quicksort(void* arg) {
         free(local);
     }
 
+    pthread_mutex_lock(&finish_mutex); 
     counter--;
+    pthread_mutex_unlock(&finish_mutex); 
+    
     return 0;
 }

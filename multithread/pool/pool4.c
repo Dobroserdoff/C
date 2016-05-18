@@ -36,7 +36,12 @@ int main () {
     }   
 
     sync_queue_enqueue(&queue, stp);
-        
+    
+    for (i = 0; i < POOL; i++) {
+        pthread_mutex_lock(&finish_mutex);
+        pthread_cond_wait(&finish_condvar, &finish_mutex);
+    }
+
     for (i = 0; i < POOL; i++) {
         pthread_join(mythreads[i], 0);
     }
