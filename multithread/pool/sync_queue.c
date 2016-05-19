@@ -9,7 +9,6 @@ void sync_queue_init(struct sync_queue_t* queue, size_t count) {
 
 void sync_queue_enqueue(struct sync_queue_t* queue, void* value) {
     pthread_mutex_lock(&queue->single_mutex);
-    counter++;
     queue_enqueue(&queue->sp, value);
     pthread_cond_signal(&queue->single_condvar);
     pthread_mutex_unlock(&queue->single_mutex);
@@ -17,11 +16,10 @@ void sync_queue_enqueue(struct sync_queue_t* queue, void* value) {
 
 void* sync_queue_dequeue(struct sync_queue_t* queue) {
     while (1) { 
-        char *temp = NULL;
+        void* temp = NULL;
 
         pthread_mutex_lock(&queue->single_mutex);
         if (!queue_empty(&queue->sp)) {
-            counter--;
             temp = queue_dequeue(&queue->sp);
             pthread_mutex_unlock(&queue->single_mutex);
             return temp;

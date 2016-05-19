@@ -5,21 +5,16 @@
 #include "qsort.h"
 
 void* quicksort(void *sqp, void* sp) {
+    struct sync_queue_t* queue = sqp;
     struct params *local = sp, temp, *leftp, *rightp;
     int i, j, less, li = 0, *pivot, weight = 0;
     pivot = local->p;
-    printf("%d ", *pivot);
 
-    pthread_mutex_lock(&finish_mutex); 
-    counter++;  
-    pthread_mutex_lock(&finish_mutex); 
- 
-    
-    if (local->size <= 1) {
+   if (local->size <= 1) {
         pthread_mutex_lock(&finish_mutex); 
         counter--;
         
-        if (counter == 1) {
+        if (counter == 0) {
             pthread_cond_signal(&finish_condvar);
         }    
 
@@ -29,7 +24,7 @@ void* quicksort(void *sqp, void* sp) {
     } else {
         leftp = (struct params*) malloc(sizeof(temp));
         rightp = (struct params*) malloc(sizeof(temp));
- 
+         
         for (i = 0; ar[i] != *pivot; i++, weight++)
             ;
         while (i < (local->size + weight)) {
@@ -58,9 +53,15 @@ void* quicksort(void *sqp, void* sp) {
             rightp->p++;
         }
         
-        sync_queue_enqueue(sqp, leftp);
-        sync_queue_enqueue(sqp, rightp);
-        free(local);
+        pthread_mutex_lock(&finish_mutex); 
+        counter++;
+        pthread_mutex_unlock(&finish_mutex); 
+        sync_queue_enqueue(queue, leftp);
+        
+        pthread_mutex_lock(&finish_mutex); 
+        counter++;
+        pthread_mutex_unlock(&finish_mutex); 
+        sync_queue_enqueue(queue, rightp);
     }
 
     pthread_mutex_lock(&finish_mutex); 

@@ -28,21 +28,19 @@ int main () {
     stp = malloc(sizeof(void*));
     stp = &st;
     
-    counter++;
     sync_queue_init(&queue, ARSIZE + POOL);   
     
     for (i = 0; i < POOL; i++) {
         pthread_create(&mythreads[i], 0, single, &queue);
     }   
     
+    pthread_mutex_lock(&finish_mutex);
+    counter++;
+    pthread_mutex_unlock(&finish_mutex);
     sync_queue_enqueue(&queue, stp);
     
-    for (i = 0; i < POOL; i++) {
-        pthread_mutex_lock(&finish_mutex);
-        pthread_cond_wait(&finish_condvar, &finish_mutex);
-    }
-
-    counter--;
+    pthread_mutex_lock(&finish_mutex);
+    pthread_cond_wait(&finish_condvar, &finish_mutex);
 
     for (i = 0; i < POOL; i++) {
         pthread_join(mythreads[i], 0);
@@ -59,10 +57,8 @@ int main () {
 
 void* single (void* param) {
     while (counter > 0) {
-        puts("Checkpoint");
         struct params* temp = sync_queue_dequeue(param);
-        printf("%d ", *(temp->p));
-        quicksort(param, &temp); 
+        quicksort(param, temp); 
     }
     return 0;
 }
