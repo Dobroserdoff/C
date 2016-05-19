@@ -13,7 +13,7 @@ int main () {
     int i, sum1, sum2;
     pthread_t mythreads[POOL];
     struct sync_queue_t queue;
-    struct params st, *stp;
+    struct params *stp;
     counter = 0;
     
     puts("Unsorted array of integers:");
@@ -28,22 +28,24 @@ int main () {
         sum1 += ar[i];
     }
 
-    st.p = &ar[0];
-    st.size = ARSIZE;
-    stp = malloc(sizeof(void*));
-    stp = &st;
-    
+    stp = malloc(sizeof(struct params));
+    stp->p = &ar[0];
+    stp->size = ARSIZE;
+
     sync_queue_init(&queue, 2*(ARSIZE + POOL));   
     
+    puts("Checkpoint 1\n");
     for (i = 0; i < POOL; i++) {
         pthread_create(&mythreads[i], 0, single, &queue);
     }   
-    
+   
+    puts("Checkpoint 2\n"); 
     pthread_mutex_lock(&finish_mutex);
     counter++;
     pthread_mutex_unlock(&finish_mutex);
     sync_queue_enqueue(&queue, stp);
     
+    puts("Checkpoint 3\n");
     pthread_mutex_lock(&finish_mutex);
     if (counter != 0) {
         pthread_cond_wait(&finish_condvar, &finish_mutex);
@@ -51,6 +53,7 @@ int main () {
         pthread_mutex_unlock(&finish_mutex);
     }
     
+    puts("\nCheckpoint 4\n");
     queue_collapse(&queue.sp);
 
     for (i = 0; i < POOL; i++) {
@@ -68,7 +71,7 @@ int main () {
         }
     }
 
-    puts("Sorted array of integers:");
+    puts("\nSorted array of integers:");
     for (i = 0; i < ARSIZE; i++) {
         printf("%d ", ar[i]);
     }

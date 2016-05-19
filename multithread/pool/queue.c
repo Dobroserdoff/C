@@ -12,13 +12,11 @@ int queue_empty(struct queue_t* sp) {
 }
 
 void queue_collapse(struct queue_t* sp) {
-    (sp->start)--;
     
-    while (sp->start != sp->first) {
-        free(*(sp->start));
-        (sp->start)--;
-    } 
-    free(sp->first);
+    do {
+        free(*(--sp->start));
+    } while (sp->start != sp->first);
+    free(sp->start);
 }
 
 void queue_enqueue(struct queue_t* sp, void* value) {

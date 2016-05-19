@@ -9,12 +9,16 @@ void* quicksort(void *sqp, void* sp) {
     struct params *local = sp, temp, *leftp, *rightp;
     int i, j, less, li = 0, *pivot, weight = 0;
     pivot = local->p;
+    puts("Bingo!");
+    fflush(stdout);
+    printf("%d ", *pivot);
+    fflush(stdout);
 
-   if (local->size <= 1) {
+    if (local->size <= 1) {
         pthread_mutex_lock(&finish_mutex); 
         counter--;
-        
-        if (counter == 0) {
+
+        if ((counter == 0) && (queue_empty(&queue->sp) != 0)) {
             pthread_cond_signal(&finish_condvar);
         }    
 
