@@ -1,4 +1,4 @@
-#define ARSIZE 20
+#define ARSIZE 10
 
 pthread_mutex_t finish_mutex;
 pthread_cond_t finish_condvar;

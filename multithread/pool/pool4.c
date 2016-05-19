@@ -10,7 +10,7 @@
 void* single (void*);
 
 int main () {
-    int i;
+    int i, sum1, sum2;
     pthread_t mythreads[POOL];
     struct sync_queue_t queue;
     struct params st, *stp;
@@ -23,12 +23,17 @@ int main () {
     }
     putchar('\n');
 
+    sum1 = ar[0];
+    for (i = 1; i < ARSIZE; i++) {
+        sum1 += ar[i];
+    }
+
     st.p = &ar[0];
     st.size = ARSIZE;
     stp = malloc(sizeof(void*));
     stp = &st;
     
-    sync_queue_init(&queue, ARSIZE + POOL);   
+    sync_queue_init(&queue, 2*(ARSIZE + POOL));   
     
     for (i = 0; i < POOL; i++) {
         pthread_create(&mythreads[i], 0, single, &queue);
@@ -40,10 +45,27 @@ int main () {
     sync_queue_enqueue(&queue, stp);
     
     pthread_mutex_lock(&finish_mutex);
-    pthread_cond_wait(&finish_condvar, &finish_mutex);
+    if (counter != 0) {
+        pthread_cond_wait(&finish_condvar, &finish_mutex);
+    } else {    
+        pthread_mutex_unlock(&finish_mutex);
+    }
+    
+    queue_collapse(&queue.sp);
 
     for (i = 0; i < POOL; i++) {
         pthread_join(mythreads[i], 0);
+    }
+    
+    sum2 = ar[0];
+    for (i = 1; i < ARSIZE; i++) {
+        sum2 += ar[i];
+    }
+
+    for (i = 1; i < ARSIZE; i++) {
+        if ((ar[i] < ar[i - 1]) || (sum1 != sum2)) {
+            puts("Array was sorted incorrectly");
+        }
     }
 
     puts("Sorted array of integers:");
