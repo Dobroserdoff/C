@@ -14,7 +14,10 @@ int queue_empty(struct queue_t* sp) {
 void queue_collapse(struct queue_t* sp) {
     
     do {
-        free(*(--sp->start));
+        void* ptr = *--sp->start;
+        if (ptr != 0) {
+            free(ptr);
+        }
     } while (sp->start != sp->first);
     free(sp->start);
 }

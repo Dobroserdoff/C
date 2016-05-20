@@ -1,6 +1,6 @@
 #include "queue.h"
 
-int counter;
+extern int counter;
 
 struct sync_queue_t {
     pthread_mutex_t single_mutex;

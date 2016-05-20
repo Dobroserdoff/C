@@ -1,6 +1,8 @@
 #include <pthread.h>
 #include "sync_queue.h"
 
+int counter;
+
 void sync_queue_init(struct sync_queue_t* queue, size_t count) {
     queue_init(&queue->sp, count);
     pthread_mutex_init(&queue->single_mutex, 0);
@@ -25,6 +27,7 @@ void* sync_queue_dequeue(struct sync_queue_t* queue) {
             return temp;
         } else {
             pthread_cond_wait(&queue->single_condvar, &queue->single_mutex);
+            pthread_mutex_unlock(&queue->single_mutex);
         }
    }
 }

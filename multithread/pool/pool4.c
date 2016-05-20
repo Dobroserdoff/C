@@ -7,6 +7,9 @@
 
 #define POOL 4
 
+pthread_mutex_t finish_mutex;
+pthread_cond_t finish_condvar;
+
 void* single (void*);
 
 int main () {
@@ -32,7 +35,7 @@ int main () {
     stp->p = &ar[0];
     stp->size = ARSIZE;
 
-    sync_queue_init(&queue, 2*(ARSIZE + POOL));   
+    sync_queue_init(&queue, 10*(ARSIZE + POOL));   
     
     puts("Checkpoint 1\n");
     for (i = 0; i < POOL; i++) {
@@ -45,20 +48,28 @@ int main () {
     pthread_mutex_unlock(&finish_mutex);
     sync_queue_enqueue(&queue, stp);
     
-    puts("Checkpoint 3\n");
     pthread_mutex_lock(&finish_mutex);
+    printf("main wait ctr %d\n", counter);
+    fflush(stdout);
     if (counter != 0) {
         pthread_cond_wait(&finish_condvar, &finish_mutex);
-    } else {    
-        pthread_mutex_unlock(&finish_mutex);
+        printf("main signal received %d\n", counter);
+        fflush(stdout);
+    }
+    pthread_mutex_unlock(&finish_mutex);
+
+    for (i = 0; i < POOL; i++) {
+        printf("enqueue 0\n");
+        fflush(stdout);
+        sync_queue_enqueue(&queue, 0);
     }
     
-    puts("\nCheckpoint 4\n");
-    queue_collapse(&queue.sp);
-
     for (i = 0; i < POOL; i++) {
         pthread_join(mythreads[i], 0);
     }
+
+    puts("\nCheckpoint 4\n");
+    queue_collapse(&queue.sp);
     
     sum2 = ar[0];
     for (i = 1; i < ARSIZE; i++) {
@@ -81,8 +92,16 @@ int main () {
 }
 
 void* single (void* param) {
-    while (counter > 0) {
+    while (1) {
+        printf("before dequeue\n");
+        fflush(stdout);
         struct params* temp = sync_queue_dequeue(param);
+        printf("dequeued %p\n", temp);
+        printf("after dequeue\n");
+        fflush(stdout);
+        if (!temp) {
+            break;
+        }
         quicksort(param, temp); 
     }
     return 0;
