@@ -1,4 +1,4 @@
-#define ARSIZE 10000
+#define ARSIZE 200000
 
 extern pthread_mutex_t finish_mutex;
 extern pthread_cond_t finish_condvar;

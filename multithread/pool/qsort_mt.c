@@ -9,8 +9,6 @@ void* quicksort(void *sqp, void* sp) {
     struct params *local = sp, temp, *leftp, *rightp;
     int i, j, less, li = 0, *pivot, weight = 0;
     pivot = local->p;
-    printf("quicksort %p %d\n", local->p, local->size);
-    fflush(stdout);
 
     if (local->size > 1) {
         leftp = (struct params*) malloc(sizeof(temp));
@@ -46,28 +44,20 @@ void* quicksort(void *sqp, void* sp) {
         
         pthread_mutex_lock(&finish_mutex); 
         counter++;
-        printf("+ctr %d\n", counter);
-        fflush(stdout);
         pthread_mutex_unlock(&finish_mutex); 
         sync_queue_enqueue(queue, leftp);
         
         pthread_mutex_lock(&finish_mutex); 
         counter++;
-        printf("+ctr %d\n", counter);
-        fflush(stdout);
         pthread_mutex_unlock(&finish_mutex); 
         sync_queue_enqueue(queue, rightp);
     }
 
     pthread_mutex_lock(&finish_mutex); 
     counter--;
-    printf("-ctr %d\n", counter);
-    fflush(stdout);
 
     if (counter == 0) {
         pthread_cond_signal(&finish_condvar);
-        printf("signal\n");
-        fflush(stdout);
     }    
 
     pthread_mutex_unlock(&finish_mutex);    

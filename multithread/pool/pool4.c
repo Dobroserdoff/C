@@ -5,7 +5,7 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-#define POOL 4
+#define POOL 8
 
 pthread_mutex_t finish_mutex;
 pthread_cond_t finish_condvar;
@@ -37,30 +37,22 @@ int main () {
 
     sync_queue_init(&queue, 10*(ARSIZE + POOL));   
     
-    puts("Checkpoint 1\n");
     for (i = 0; i < POOL; i++) {
         pthread_create(&mythreads[i], 0, single, &queue);
     }   
    
-    puts("Checkpoint 2\n"); 
     pthread_mutex_lock(&finish_mutex);
     counter++;
     pthread_mutex_unlock(&finish_mutex);
     sync_queue_enqueue(&queue, stp);
     
     pthread_mutex_lock(&finish_mutex);
-    printf("main wait ctr %d\n", counter);
-    fflush(stdout);
     if (counter != 0) {
         pthread_cond_wait(&finish_condvar, &finish_mutex);
-        printf("main signal received %d\n", counter);
-        fflush(stdout);
     }
     pthread_mutex_unlock(&finish_mutex);
 
     for (i = 0; i < POOL; i++) {
-        printf("enqueue 0\n");
-        fflush(stdout);
         sync_queue_enqueue(&queue, 0);
     }
     
@@ -68,7 +60,6 @@ int main () {
         pthread_join(mythreads[i], 0);
     }
 
-    puts("\nCheckpoint 4\n");
     queue_collapse(&queue.sp);
     
     sum2 = ar[0];
@@ -78,7 +69,6 @@ int main () {
 
     for (i = 1; i < ARSIZE; i++) {
         if ((ar[i] < ar[i - 1]) || (sum1 != sum2)) {
-            puts("Array was sorted incorrectly");
         }
     }
 
@@ -93,12 +83,7 @@ int main () {
 
 void* single (void* param) {
     while (1) {
-        printf("before dequeue\n");
-        fflush(stdout);
         struct params* temp = sync_queue_dequeue(param);
-        printf("dequeued %p\n", temp);
-        printf("after dequeue\n");
-        fflush(stdout);
         if (!temp) {
             break;
         }
