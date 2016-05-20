@@ -4,6 +4,9 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
+#define NS 100
+#define MS 10
+
 void* quicksort(void *sqp, void* sp) {
     struct sync_queue_t* queue = sqp;
     struct params *local = sp, temp, *leftp, *rightp;
@@ -42,15 +45,27 @@ void* quicksort(void *sqp, void* sp) {
             rightp->p++;
         }
         
-        pthread_mutex_lock(&finish_mutex); 
-        counter++;
-        pthread_mutex_unlock(&finish_mutex); 
-        sync_queue_enqueue(queue, leftp);
+        if ((local->size) <= NS) {
+            pthread_mutex_lock(&finish_mutex); 
+            counter++;
+            pthread_mutex_unlock(&finish_mutex); 
+            quicksort(queue, leftp);
+            
+            pthread_mutex_lock(&finish_mutex); 
+            counter++;
+            pthread_mutex_unlock(&finish_mutex); 
+            quicksort(queue, rightp);
+        } else {
+            pthread_mutex_lock(&finish_mutex); 
+            counter++;
+            pthread_mutex_unlock(&finish_mutex); 
+            sync_queue_enqueue(queue, leftp);
         
-        pthread_mutex_lock(&finish_mutex); 
-        counter++;
-        pthread_mutex_unlock(&finish_mutex); 
-        sync_queue_enqueue(queue, rightp);
+            pthread_mutex_lock(&finish_mutex); 
+            counter++;
+            pthread_mutex_unlock(&finish_mutex); 
+            sync_queue_enqueue(queue, rightp);
+        }
     }
 
     pthread_mutex_lock(&finish_mutex); 
