@@ -87,7 +87,7 @@ void* single (void* param) {
         if (!temp) {
             break;
         }
-        quicksort(param, temp); 
+        quicksort(param, temp, 0); 
     }
     return 0;
 }

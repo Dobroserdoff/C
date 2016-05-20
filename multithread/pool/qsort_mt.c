@@ -4,10 +4,10 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-#define NS 100
+#define NS 1000
 #define MS 10
 
-void* quicksort(void *sqp, void* sp) {
+void* quicksort(void *sqp, void* sp, int flag) {
     struct sync_queue_t* queue = sqp;
     struct params *local = sp, temp, *leftp, *rightp;
     int i, j, less, li = 0, *pivot, weight = 0;
@@ -45,16 +45,9 @@ void* quicksort(void *sqp, void* sp) {
             rightp->p++;
         }
         
-        if ((local->size) <= NS) {
-            pthread_mutex_lock(&finish_mutex); 
-            counter++;
-            pthread_mutex_unlock(&finish_mutex); 
-            quicksort(queue, leftp);
-            
-            pthread_mutex_lock(&finish_mutex); 
-            counter++;
-            pthread_mutex_unlock(&finish_mutex); 
-            quicksort(queue, rightp);
+        if (((local->size) <= NS) || (flag == 1)) {
+            quicksort(queue, leftp, 1);
+            quicksort(queue, rightp, 1);
         } else {
             pthread_mutex_lock(&finish_mutex); 
             counter++;
@@ -67,15 +60,17 @@ void* quicksort(void *sqp, void* sp) {
             sync_queue_enqueue(queue, rightp);
         }
     }
+    
+    if (flag == 0) {
+        pthread_mutex_lock(&finish_mutex); 
+        counter--;
 
-    pthread_mutex_lock(&finish_mutex); 
-    counter--;
+        if (counter == 0) {
+            pthread_cond_signal(&finish_condvar);
+        }    
 
-    if (counter == 0) {
-        pthread_cond_signal(&finish_condvar);
-    }    
-
-    pthread_mutex_unlock(&finish_mutex);    
+        pthread_mutex_unlock(&finish_mutex);    
+    }
     
     return 0;
 }
