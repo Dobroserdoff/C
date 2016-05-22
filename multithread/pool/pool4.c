@@ -5,7 +5,7 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-#define POOL 8
+#define POOL 1
 
 pthread_mutex_t finish_mutex;
 pthread_cond_t finish_condvar;
@@ -19,12 +19,12 @@ int main () {
     struct params *stp;
     counter = 0;
     
-    puts("Unsorted array of integers:");
+    //puts("Unsorted array of integers:");
     for (i = 0; i < ARSIZE; i++) {
         ar[i] = rand() % 100;
-        printf("%d ", ar[i]);
+        //printf("%d ", ar[i]);
     }
-    putchar('\n');
+    //putchar('\n');
 
     sum1 = ar[0];
     for (i = 1; i < ARSIZE; i++) {
@@ -71,13 +71,13 @@ int main () {
         if ((ar[i] < ar[i - 1]) || (sum1 != sum2)) {
         }
     }
-
+    /*
     puts("\nSorted array of integers:");
     for (i = 0; i < ARSIZE; i++) {
         printf("%d ", ar[i]);
     }
     putchar('\n');
-    
+    */
     return 0;
 }
 
