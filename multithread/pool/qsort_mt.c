@@ -4,58 +4,30 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-#define NS 1000
-#define MS 10
+#define NS 100
+#define MS 5
 
 void* quicksort(void *sqp, void* sp, int flag) {
     struct sync_queue_t* queue = sqp;
-    const struct params* local = sp;
+    struct params* local = sp;
     struct params *leftp, *rightp;
-    int pivot, *l, *g, *end, temp;
 
     if (local->size > 1) {
-        pivot = *local->p;
-        l = g = end = local->p;
-        end += local->size;
-        g = (end - 1);
-
         leftp = malloc(sizeof(struct params));
         rightp = malloc(sizeof(struct params));
+        partition(local, leftp, rightp);        
 
-        while (l != g) {
-            while (*l <= pivot && l != end) {
-                l++;
-            }
-            if (l == end) {
-                l--;
-            }
-
-            while (*g > pivot && g != l) {
-                g--;
-            }
-            
-            if (l != g) {
-                temp = *l;
-                *l = *g;
-                *g = temp;
-            }
-        }
-        l--;
-        *(local->p) = *l;
-        *l = pivot;
-
-        leftp->size = g - local->p;
-        leftp->p = local->p;
-
-        rightp->size = end - g;
-        rightp->p = g;
-    
         if (((local->size) <= NS) || (flag == 1)) {
-            quicksort(queue, leftp, 1);
-            quicksort(queue, rightp, 1);
-            
+            if (leftp->size > 1) {
+                quicksort(queue, leftp, 1);
+            }
             free(leftp);
+            
+            if (rightp->size > 1) {
+                quicksort(queue, rightp, 1);
+            }    
             free(rightp);
+            
         } else {
             pthread_mutex_lock(&finish_mutex); 
             counter++;
@@ -80,4 +52,44 @@ void* quicksort(void *sqp, void* sp, int flag) {
     }
     
     return 0;
+}
+
+void partition(struct params* local, struct params* leftp, struct params* rightp) {
+    int pivot, *l, *g, *start, *end, temp;
+    
+    pivot = *local->p;
+    start = local->p;
+    end = local->p + local->size;
+    l = local->p;
+    g = end;
+
+    while (l != g) {
+        while (l != end && *l <= pivot) {
+            l++;
+        }
+            
+        while (*(g - 1) > pivot) {
+            g--;
+        }
+            
+        if (l != g) {
+            swap(l, g - 1);
+        }
+    }
+
+    swap(start, l - 1);
+
+    leftp->size = g - local->p - 1;
+    leftp->p = local->p;
+
+    rightp->size = end - g;
+    rightp->p = g;
+}
+
+void swap(int* p, int *q) {
+    int temp;
+
+    temp = *q;
+    *q = *p;
+    *p = temp;
 }

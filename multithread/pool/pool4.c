@@ -5,7 +5,7 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-#define POOL 1
+#define POOL 4
 
 pthread_mutex_t finish_mutex;
 pthread_cond_t finish_condvar;
