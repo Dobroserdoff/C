@@ -4,8 +4,8 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-#define NS 100
-#define MS 5
+#define NS 1000
+#define MS 10
 
 void* quicksort(void *sqp, void* sp, int flag) {
     struct sync_queue_t* queue = sqp;
@@ -13,31 +13,36 @@ void* quicksort(void *sqp, void* sp, int flag) {
     struct params *leftp, *rightp;
 
     if (local->size > 1) {
-        leftp = malloc(sizeof(struct params));
-        rightp = malloc(sizeof(struct params));
-        partition(local, leftp, rightp);        
-
-        if (((local->size) <= NS) || (flag == 1)) {
-            if (leftp->size > 1) {
-                quicksort(queue, leftp, 1);
-            }
-            free(leftp);
-            
-            if (rightp->size > 1) {
-                quicksort(queue, rightp, 1);
-            }    
-            free(rightp);
-            
-        } else {
-            pthread_mutex_lock(&finish_mutex); 
-            counter++;
-            pthread_mutex_unlock(&finish_mutex); 
-            sync_queue_enqueue(queue, leftp);
+        if (local->size <= MS) {
+            bubble(sp);
         
-            pthread_mutex_lock(&finish_mutex); 
-            counter++;
-            pthread_mutex_unlock(&finish_mutex); 
-            sync_queue_enqueue(queue, rightp);
+        } else {
+            leftp = malloc(sizeof(struct params));
+            rightp = malloc(sizeof(struct params));
+            partition(local, leftp, rightp);        
+       
+            if ((local->size > MS) && (local->size <= NS)) {
+                if (leftp->size > 1) {
+                    quicksort(queue, leftp, 1);
+                }
+                free(leftp);
+            
+                if (rightp->size > 1) {
+                    quicksort(queue, rightp, 1);
+                }    
+                free(rightp);
+            
+            } else {
+                pthread_mutex_lock(&finish_mutex); 
+                counter++;
+                pthread_mutex_unlock(&finish_mutex); 
+                sync_queue_enqueue(queue, leftp);
+        
+                pthread_mutex_lock(&finish_mutex); 
+                counter++;
+                pthread_mutex_unlock(&finish_mutex); 
+                sync_queue_enqueue(queue, rightp);
+            }
         }
     }
     
@@ -84,6 +89,27 @@ void partition(struct params* local, struct params* leftp, struct params* rightp
 
     rightp->size = end - g;
     rightp->p = g;
+}
+
+void bubble(struct params* sp) {
+    int i, length, *left, *right;
+
+    left = sp->p;
+    right = left + 1;
+    length = sp->size;
+
+    while (length > 1) {
+        for (i = 1; i < length; i++) {
+            if (*left > * right) {
+                swap(left, right);
+            }
+            left++;
+            right++;
+        }
+        left = sp->p;
+        right = left + 1;
+        length--;
+    }
 }
 
 void swap(int* p, int *q) {
