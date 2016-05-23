@@ -4,8 +4,7 @@
 #include "sync_queue.h"
 #include "qsort.h"
 
-#define NS 1000
-#define MS 10
+extern int rs, bs;
 
 void* quicksort(void *sqp, void* sp, int flag) {
     struct sync_queue_t* queue = sqp;
@@ -13,15 +12,15 @@ void* quicksort(void *sqp, void* sp, int flag) {
     struct params *leftp, *rightp;
 
     if (local->size > 1) {
-        if (local->size <= MS) {
+        if ((bs != 0) && (local->size <= bs)) {
             bubble(sp);
-        
+
         } else {
             leftp = malloc(sizeof(struct params));
             rightp = malloc(sizeof(struct params));
             partition(local, leftp, rightp);        
        
-            if ((local->size > MS) && (local->size <= NS)) {
+            if ((rs != 0) && (local->size > bs) && (local->size <= rs)) {
                 if (leftp->size > 1) {
                     quicksort(queue, leftp, 1);
                 }
