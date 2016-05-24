@@ -24,8 +24,8 @@ int main() {
     int i, j, k, l;
     int sec, msec;
     pid_t pid;
-    char* sep1 = { "========================================" };
-    char* sep2 = { "----------------------------------------" };
+    char* sep1 = { "===================================================" };
+    char* sep2 = { "---------------------------------------------------" };
     char** argums;
     char** startarg;
 
@@ -34,41 +34,43 @@ int main() {
     *argums++ = path;
     *argums++ = arg1;
     
+    puts(" POOL    ARSIZE RECURSION    BUBBLE            TIME");
+    puts(sep1);
+
     for (i = 0; i < (sizeof(par) / sizeof(int)); i++) {
-        printf("i - %d, ", i);
         itoa(par[i], argums++);
         *argums++ = arg2;
         
         for (j = 0; j < (sizeof(asr) / sizeof(int)); j++) {
-            printf("j - %d, ", j);
             itoa(asr[j], argums++);
             *argums++ = arg3;
             
             for (k = 0; k < (sizeof(rr) / sizeof(int)); k++) {
-                printf("k - %d, ", k);
                 itoa(rr[k], argums++);
                 *argums++ = arg4;
                 
                 for (l = 0; l <= k; l++) {
-                    printf("l - %d\n", l);
                     itoa(br[l], argums++) ;
                     *argums-- = NULL;
-
+                    
+                    printf("%5d%10d%10d%10d", par[i], asr[j], rr[k], br[l]);
+                        
                     gettime(startarg);
                     free(*argums);
                 }
                 argums -= 2;
                 free(*argums);
-                if (j != (sizeof(asr) / 4) - 1) {
-                    //puts(sep2);
-                }
             }
+            if (j != (sizeof(asr) / 4) - 1) {
+                puts(sep2);
+            }
+
             argums -= 2;
             free(*argums);
-            //puts(sep1);  
         }   
         argums -= 2;
         free(*argums);
+        puts(sep1);  
     }
     free(startarg);
         
@@ -78,11 +80,11 @@ int main() {
 void gettime(char* const* arg) {
     int err;
     pid_t pid;
+    long bms, ems;
     struct timeval begin, end;
     
-    if (gettimeofday(&begin, 0) == 0) {
-        //printf("BSEC - %d, BMSEC - %d\n", (int) begin.tv_sec, (int) begin.tv_usec);
-    }
+    gettimeofday(&begin, 0);
+    bms = begin.tv_sec * 1000000 + begin.tv_usec;
 
     pid = fork();
     if (pid == 0) {    
@@ -92,12 +94,11 @@ void gettime(char* const* arg) {
 
     if (pid > 0) {
         waitpid(pid, NULL, 0);
-        if (gettimeofday(&end, 0) == 0) {
-            //printf("ESEC - %d, EMSEC - %d\n", (int) end.tv_sec, (int) end.tv_usec);
-        }
+        gettimeofday(&end, 0);
+        ems = end.tv_sec * 1000000 + end.tv_usec;
     }
     
-    //printf("Seconds - %ld, microseconds - %ld\n", end.tv_sec - begin.tv_sec, end.tv_usec - begin.tv_usec);
+    printf("\t%lds %ldms\n", (ems - bms) / 1000000, (ems - bms) % 1000000);
 
 }
 
