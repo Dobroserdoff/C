@@ -2,14 +2,17 @@
 
 char* path = { "./speedtest" }; 
 int sr = 12;
+int tsr = 5;
 char* arg = { "-s" };
 
+int dozen(char**, char**);
 int gettime(char**);
 
 int main(int argc, char** argv) {
     struct params sp;
-    int i, imin, imax;
-    int average[sr], sum = 0;
+    int i, medium, sum = 0;
+    int dozres[tsr];
+    float deviation;
     char** argums;
     char** startarg;
 
@@ -23,6 +26,28 @@ int main(int argc, char** argv) {
     
     *argums++ = arg;
 
+    for (i = 0; i < tsr; i++) {
+        dozres[i] = dozen(startarg, argums);
+        sum += dozres[i];
+        printf("%d\n", dozres[i]);
+    }
+    medium = sum / tsr;
+
+    sp.p = &dozres[0];
+    sp.size = tsr;
+    quicksort(&sp, 0);
+
+    deviation = 100 * ((dozres[tsr - 1] - medium) / medium);
+    printf("%d(%f)\t", medium, deviation);
+    free(startarg);
+    return 0;
+}
+
+int dozen(char** startarg, char** argums) {
+    struct params sp;
+    int i, imin, imax;
+    int average[sr], sum = 0;
+
     imin = sr / 3;
     imax = (sr / 3) * 2;
 
@@ -33,7 +58,7 @@ int main(int argc, char** argv) {
         average[i] = gettime(startarg);
         free(*argums);
     }
-                
+    
     sp.p = &average[0];
     sp.size = sr;
     quicksort(&sp, 0);
@@ -43,10 +68,7 @@ int main(int argc, char** argv) {
             sum += average[i];
         }
     }
-    
-    printf("%d\t", sum / (imax - imin));
-    free(startarg);
-    return 0;
+    return (sum / (imax - imin));
 }
 
 int gettime(char** arg) {
