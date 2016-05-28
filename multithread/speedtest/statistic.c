@@ -11,8 +11,9 @@ int gettime(char**);
 
 int main(int argc, char** argv) {
     struct params sp;
-    int i, medium, deviation, sum = 0;
+    int i, medium, fd, sum = 0;
     int dozres[tsr];
+    float deviation;
     char** argums;
     char** startarg;
 
@@ -23,6 +24,8 @@ int main(int argc, char** argv) {
     for (i = 1; argv[i] != NULL; i++) {
         if (argv[i][1] == 'f') {
             flag = atoi(argv[i + 1]);
+        } else if (argv[i][1] == 'd') {
+            fd = atoi(argv[i + 1]);
         }
         *argums++ = argv[i];
     }
@@ -32,7 +35,6 @@ int main(int argc, char** argv) {
     for (i = 0; i < tsr; i++) {
         dozres[i] = dozen(startarg, argums);
         sum += dozres[i];
-        //printf("%d %d\n", dozres[i], sum);
     }
     medium = sum / tsr;
 
@@ -40,9 +42,10 @@ int main(int argc, char** argv) {
     sp.size = tsr;
     quicksort(&sp, 0);
     
-    //printf("%d %d %d\n", dozres[tsr - 1], medium, (dozres[tsr - 1] - medium));
-    deviation = ((dozres[tsr - 1] - medium) % medium);
-    printf("%d(%6d)\t", medium, deviation);
+    deviation = 100 * ((float)(dozres[tsr - 1] - medium) / medium);
+    write(fd, &medium, sizeof(int));
+    write(fd, &deviation, sizeof(float));
+    close(fd);
     free(startarg);
     return 0;
 }
@@ -71,13 +74,11 @@ int dozen(char** startarg, char** argums) {
         imin = 0;
         imax = sr / 2;
     } else {
-        imin = sr-1;
-        imax = sr;
+        imin = 0;
+        imax = 1;
     }
-    for (i = 0; i < sr; i++) {
-        if ((i >= imin) && (i < imax)) {
-            sum += average[i];
-        }
+    for (i = imin; i < imax; i++) {
+        sum += average[i];
     }
     return (sum / (imax - imin));
 }
