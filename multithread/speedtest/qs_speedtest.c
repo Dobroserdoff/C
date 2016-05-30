@@ -1,26 +1,36 @@
 #include "functions.h"
 
 int main(int argc, char** argv) {
-    int i;
-    int arsize, sr, bub = 0;
+    int i, fdfrom, fdto;
+    int time, arsize, sr, bub = 0;
     struct params* stp;
     long bms, ems;
     struct timeval begin, end;
-
+    
     if (argc > 1) {
-        for (i = 2; i < argc; i++) {
-            if (argv[i - 1][1] == 'a') {
-                arsize = atoi(argv[i]);
-            } else if (argv[i - 1][1] == 'b'){
-                bub = atoi(argv[i]);
-            } else if (argv[i - 1][1] == 's'){
-                sr = atoi(argv[i]);
+        for (i = 0; i < argc; i++) {
+            if (argv[i][1] == 'd') {
+                fdfrom = atoi(argv[i + 1]);
             }
-
         }
     }
+    fdto = fdfrom + 1;
+    printf("%d\n", fdfrom);
+    if (read(fdfrom, &arsize, sizeof(int)) == -1) {
+        puts(strerror(errno));
+    }
+    
+    if (read(fdfrom, &bub, sizeof(int)) == -1) {
+        puts(strerror(errno));
+    }
+    
+    if (read(fdfrom, &sr, sizeof(int)) == -1) {
+        puts(strerror(errno));
+    }
+    
+    close(fdfrom);  
+    printf("%d %d %d\n", arsize, bub, sr);
     int ar[arsize];
-
     srand(sr);
     
     //puts("Unsorted array of integers:");
@@ -41,14 +51,17 @@ int main(int argc, char** argv) {
 
     gettimeofday(&end, 0);
     ems = end.tv_sec * 1000000 + end.tv_usec;
-    
+    time = (int) ems - bms;
+
     /*puts("Sorted array of integers");
     for (i = 0; i < ARSIZE; i++) {
         printf("%d ", ar[i]);
     }
     putchar('\n');*/
     //printf("ARSIZE: %d, BUBBLE: %d, TIME: %ldms\n", arsize, bub, ems - bms);
-
+    
+    printf("%d\n", time);
+    write(fdto, &time, sizeof(int));
     free(stp);
 
     return 0;

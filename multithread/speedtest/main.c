@@ -19,7 +19,7 @@ int main() {
     argums = startarg;
     *argums++ = path;
     *argums++ = arg4;
-    itoa(4, argums++);
+    itoa(3, argums++);
     *argums++ = arg1;
     
     for (k = 0; k < 3; k++) {
@@ -36,7 +36,7 @@ int main() {
             printf("%d\t", asr[i]);
             fflush(stdout);
             itoa(asr[i], argums++);
-            *argums++ = arg2;
+            *argums++ = arg3;
         
             for (j = 0; j < (sizeof(br) / sizeof(int)); j++) {
                 itoa(br[j], argums++);
