@@ -4,7 +4,8 @@ char* path = { "./speedtest" };
 int sr = 12;
 int tsr = 5;
 int flag = 0;
-char* arg = { "-d" };
+char* arg1 = { "-l" };
+char* arg2 = { "-r" };
 int fd, size, bub;
 
 int dozen(char**);
@@ -14,20 +15,11 @@ int main(int argc, char** argv) {
     int i, medium, sum = 0;
     int dozres[tsr];
     float deviation;
-    char** argums, **str;
     char** startarg;
 
     startarg = malloc(100 * sizeof(void*));
-    argums = startarg;
-    *argums++ = path;
-    *argums++ = arg;
+    *startarg = path;
     
-    str = argv;
-    while (*str != NULL){
-        printf("%s ", *str++);
-    }
-    putchar('\n');
-
     for (i = 1; argv[i] != NULL; i++) {
         if (argv[i][1] == 'f') {
             flag = atoi(argv[i + 1]);
@@ -39,8 +31,6 @@ int main(int argc, char** argv) {
             bub = atoi(argv[i + 1]);
         }
     }
-    itoa(fd, argums++);
-    *argums-- = NULL;
 
     for (i = 0; i < tsr; i++) {
         dozres[i] = dozen(startarg);
@@ -53,11 +43,10 @@ int main(int argc, char** argv) {
     quicksort(&sp, 0);
     
     deviation = 100 * ((float)(dozres[tsr - 1] - medium) / medium);
-    printf("%d %f\n", medium, deviation);
+    //printf("%d(%f)\n", medium, deviation);
     write(fd, &medium, sizeof(int));
     write(fd, &deviation, sizeof(float));
     
-    close(fd);
     free(startarg);
     return 0;
 }
@@ -65,43 +54,48 @@ int main(int argc, char** argv) {
 int dozen(char** startarg) {
     struct params sp;
     pid_t pid;
-    int i, imin, imax, pipeto[2], pipefrom[2], fd2;
+    int i, imin, imax, pipeto[2], pipefrom[2];
     int average[sr], sum = 0;
-    char** string;
-    
-    string = startarg;
-    while (*string != NULL){
-        printf("%s ", *string++);
-    }
-    putchar('\n');
-    fd2 = (fd + 1);
-    
+    char** argums;
+
+    argums = startarg;
+    argums++;
+
+    pipe(pipeto);
+    *argums++ = arg1;
+    itoa(pipeto[0], argums++);
+
+    pipe(pipefrom);
+    *argums++ = arg2;
+    itoa(pipefrom[1], argums++);
+    *argums-- = NULL;
+
     for (i = 0; i < sr; i++) {
-        pipe(pipeto);
-        pipe(pipefrom);
-        close(pipefrom[1]);
-    
         pid = fork();       
+        
         if (pid == 0) {    
-            close(pipeto[0]);
-            
-            write(fd, &size, sizeof(int));
-            write(fd, &bub, sizeof(int));
-            write(fd, &i, sizeof(int));
+            write(pipeto[1], &size, sizeof(int));
+            write(pipeto[1], &bub, sizeof(int));
+            write(pipeto[1], &i, sizeof(int));
             
             execv(path, startarg);
             puts(strerror(errno));
         }
 
         if (pid > 0) {
+            waitpid(pid, NULL, 0);
+            
             if (read(pipefrom[0], &average[i], sizeof(int)) == -1) {
                 puts(strerror(errno));
             }    
-            waitpid(pid, NULL, 0);
         }
-        close(fd2);
 
     }
+    close(pipeto[0]);
+    close(pipeto[1]);
+    close(pipeto[0]);
+    close(pipeto[1]);
+
     sp.p = &average[0];
     sp.size = sr;
     quicksort(&sp, 0);
@@ -120,8 +114,5 @@ int dozen(char** startarg) {
     for (i = imin; i < imax; i++) {
         sum += average[i];
     }
-    
     return (sum / (imax - imin));
 }
-
-

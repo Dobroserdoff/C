@@ -18,8 +18,6 @@ int main() {
     startarg = malloc(100 * sizeof(void*));
     argums = startarg;
     *argums++ = path;
-    *argums++ = arg4;
-    itoa(3, argums++);
     *argums++ = arg1;
     
     for (k = 0; k < 3; k++) {
@@ -28,7 +26,7 @@ int main() {
 
         putchar('\t');
         for (i = 0; i < (sizeof(br) / sizeof(int)); i++) {
-            printf("%d\t", br[i]);
+            printf("%d\t\t", br[i]);
         }
         putchar('\n');
 
@@ -40,20 +38,21 @@ int main() {
         
             for (j = 0; j < (sizeof(br) / sizeof(int)); j++) {
                 itoa(br[j], argums++);
-                *argums-- = NULL;
+                *argums++ = arg4;
                 
                 pipe(pipefd);    
+                itoa(pipefd[1], argums++);
+                *argums-- = NULL;
+                 
                 pid = fork();
-                
                 if (pid == 0) {
-                    close(pipefd[0]);
                     execv(path, startarg);
                     puts(strerror(errno));
                 }
 
                 if (pid > 0) {
-                    close(pipefd[1]);
-
+                    waitpid(pid, NULL, 0);
+                    
                     if (read(pipefd[0], &fdi, sizeof(int)) == -1) {
                         puts(strerror(errno));
                     }
@@ -61,11 +60,12 @@ int main() {
                     if (read(pipefd[0], &fdf, sizeof(float)) == -1) {
                         puts(strerror(errno));
                     }
-
-                    printf("%d(%.2f)", fdi, fdf);
-                    close(pipefd[0]);
-                    waitpid(pid, NULL, 0);
+                    printf("%d(%.2f)\t", fdi, fdf);
                 }
+                close(pipefd[0]);
+                close(pipefd[1]);
+                free(*argums);
+                argums -=2;
             }
             free(*argums);
             putchar('\n');

@@ -9,13 +9,14 @@ int main(int argc, char** argv) {
     
     if (argc > 1) {
         for (i = 0; i < argc; i++) {
-            if (argv[i][1] == 'd') {
+            if (argv[i][1] == 'l') {
                 fdfrom = atoi(argv[i + 1]);
+            } else if (argv[i][1] == 'r') {
+                fdto = atoi(argv[i + 1]);
             }
         }
     }
-    fdto = fdfrom + 1;
-    printf("%d\n", fdfrom);
+    
     if (read(fdfrom, &arsize, sizeof(int)) == -1) {
         puts(strerror(errno));
     }
@@ -28,8 +29,6 @@ int main(int argc, char** argv) {
         puts(strerror(errno));
     }
     
-    close(fdfrom);  
-    printf("%d %d %d\n", arsize, bub, sr);
     int ar[arsize];
     srand(sr);
     
@@ -60,7 +59,6 @@ int main(int argc, char** argv) {
     putchar('\n');*/
     //printf("ARSIZE: %d, BUBBLE: %d, TIME: %ldms\n", arsize, bub, ems - bms);
     
-    printf("%d\n", time);
     write(fdto, &time, sizeof(int));
     free(stp);
 
